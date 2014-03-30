@@ -1,11 +1,9 @@
-import org.omg.CosNaming._NamingContextStub;
-import sun.net.www.content.image.gif;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
+
 
 /**
  * Created by futame on 06.03.14.
@@ -13,9 +11,9 @@ import java.util.Vector;
 // g = 0; c = 1; t = 2; a = 3
 
    /*
-    *РЎРѕР·РґР°РЅРёРµ: SuffixAutomata s = new SuffixAutomata(DNA);
-    * РџРѕРёСЃРє РєРѕР»РёС‡РµСЃС‚РІР° РїРѕРґСЃС‚СЂРѕРє СЃС‚СЂРѕРєРё t РІ DNA s.numOfOccurrences(t);
-    * РџРѕРёСЃРє РїРµСЂРІС‹С… СЃРёРјРІРѕР»РѕРІ РІС…РѕР¶РґРµРЅРёР№ t РІ DNA s.getOccurrences(t).
+    *Создание: SuffixAutomata s = new SuffixAutomata(DNA);
+    * Поиск количества подстрок строки t в DNA s.numOfOccurrences(t);
+    * Поиск первых символов вхождений t в DNA s.getOccurrences(t).
     */
 public class SuffixAutomata {
     final static int alphabetSize = 4;

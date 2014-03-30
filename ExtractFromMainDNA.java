@@ -29,7 +29,13 @@ public class ExtractFromMainDNA extends AbstractDNA{
 	
 }
 
-class Edition{
-	int begin,end;
+class Edition extends SimpleExtract{
+	
 	String change;
+	
+	public Edition(int b, int e, String str){
+		super(b,e);
+		change=str;
+	}
+	
 }
