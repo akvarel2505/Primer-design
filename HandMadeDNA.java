@@ -4,14 +4,14 @@ public class HandMadeDNA extends AbstractDNA{
 	
 	private String sequence;
 	
-	public String toString(){
-		return sequence;
+	public HandMadeDNA(String s){
+		sequence=s;
+		Tm=calculateTm(200,50,0);
+		percentageGC=percentageGC();
 	}
 	
-	protected float calculateTm(){
-		float res=0;
-		//
-		return res;
+	public String toString(){
+		return sequence;
 	}
 	
 	protected void findFalseSites(){ //find, but not return

@@ -1,9 +1,7 @@
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 
 /**
  * Created by futame on 06.03.14.
@@ -11,11 +9,11 @@ import java.util.List;
 // g = 0; c = 1; t = 2; a = 3
 
    /*
-    *Создание: SuffixAutomata s = new SuffixAutomata(DNA);
-    * Поиск количества подстрок строки t в DNA s.numOfOccurrences(t);
-    * Поиск первых символов вхождений t в DNA s.getOccurrences(t).
+    *РЎРѕР·РґР°РЅРёРµ: SuffixAutomata s = new SuffixAutomata(DNA);
+    * РџРѕРёСЃРє РєРѕР»РёС‡РµСЃС‚РІР° РїРѕРґСЃС‚СЂРѕРє СЃС‚СЂРѕРєРё t РІ DNA s.numOfOccurrences(t);
+    * РџРѕРёСЃРє РїРµСЂРІС‹С… СЃРёРјРІРѕР»РѕРІ РІС…РѕР¶РґРµРЅРёР№ t РІ DNA s.getOccurrences(t).
     */
-public class SuffixAutomata {
+public class SuffixAutomata extends ParentWithMainDNA {
     final static int alphabetSize = 4;
     private State[] states;
     private int[] s;
@@ -72,8 +70,8 @@ public class SuffixAutomata {
         }
     }
 
-    SuffixAutomata(String S){
-        s = stringToNum(S);
+    SuffixAutomata(){
+        s = stringToNum(theMainDNA);
         build();
     }
     private void extend(int character){
