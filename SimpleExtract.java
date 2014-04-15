@@ -7,6 +7,9 @@ public class SimpleExtract extends ParentWithMainDNA{
 		end=e;
 	}
 	
+	SimpleExtract(){
+	}
+	
 	public int getBegin() {
 		return begin;
 	}

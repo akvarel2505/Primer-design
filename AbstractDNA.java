@@ -53,11 +53,11 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
         // Increase of stability due to presence of Mg;
         double salt_effect = (salt/1000)+((mg*140/1000));
         // effect on entropy
-        S+=(0.368 * (str.length()-2) * Math.log(salt_effect));
+        S+=(0.368 * (str.length()-1) * Math.log(salt_effect));
         
 		//base pairs, nearest neighbour
         int i;
-		for (i=0; i<(str.length()-2); i++){
+		for (i=0; i<(str.length()-1); i++){
 			int j=0;
 			while (!str.regionMatches(true, i, ntides[j], 0, 2)){
 				j++;
