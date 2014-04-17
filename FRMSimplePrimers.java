@@ -23,11 +23,13 @@ public class FRMSimplePrimers extends JFrame{
 	private JTextArea txtShowGene;
 	private JLabel previousPrimer, infoAboutEdited;
 	private JList<String> leftRenz, rightRenz;
-	private ArrayList<Renzyme> arrRestrLeft, arrRestrRight, selectedRight, selectedLeft;
 	private JScrollPane scrlRight, scrlLeft, GeneScrollPane;
 	private TitledBorder brdLeft, brdRight, brgLblPrimer, brdLblEdition;
-	private HandMadeDNA currentlyEdited;
-	private int indLeft, indRight;
+	
+	private HandMadeDNA currentlyEdited; 
+	private ArrayList<RenzymeWithANumber> selectedRight, selectedLeft; ////????????????????????????????????????????????????????
+	private int geneBegin, geneEnd;
+	private EnzymesWithInfo leftEnz, rightEnz;
 	
 	
 	public FRMSimplePrimers(SimpleExtract passedGene, RenzymeMass restr){
@@ -36,28 +38,15 @@ public class FRMSimplePrimers extends JFrame{
 	
 	private void initComponents(SimpleExtract gene, RenzymeMass restr){
 		
-		//for lists
-		String[] dataRight; //= {"Справа от гена","Right","dkgfffffffffffffj;ad","fffffffffffffffffffffffff","dkgj;ad","dkgj;ad","dkgj;ad","dkgj;ad","dkgj;ad","dkgj;ad","dkgj;ad","dkgj;ad","qwerty","ffffffffffffffffffffffffff","fff"};
-		String[] dataLeft; //= {"Слева","Left","Lfffffffffffffffeft"};
+		geneBegin=gene.getBegin();
+		geneEnd=gene.getEnd();
 		
-		//operating with restriction enzymes
-		arrRestrLeft=restr.findLeft(gene.getBegin());
-		arrRestrRight=restr.findRight(gene.getEnd());
-
-		final int maxR=arrRestrRight.size();
-		final int maxL=arrRestrLeft.size();
+		leftEnz = new EnzymesWithInfo(restr.findLeft(geneBegin),true);
+		rightEnz = new EnzymesWithInfo(restr.findRight(gene.getEnd()),false);
+			 
+		selectedRight = new ArrayList<RenzymeWithANumber>();
+		selectedLeft = new ArrayList<RenzymeWithANumber>();
 		
-		dataLeft = new String[maxL];
-		dataRight = new String[maxR];
-		
-		
-		int i;
-		for (i=0; i<maxL; i++){
-			dataLeft[i]=arrRestrLeft.get(i).toString();
-		}
-		for (i=0; i<maxR; i++){
-			dataRight[i]=arrRestrRight.get(i).toString();
-		}
 		
 		txtShowGene=new JTextArea();		
 		txtShowGene.setEditable(false);
@@ -69,7 +58,7 @@ public class FRMSimplePrimers extends JFrame{
 		
 		//highlighters
 		//for gene
-		DefaultHighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+		DefaultHighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.green);
 		//for restriction enzymes
 		DefaultHighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
 		
@@ -102,7 +91,7 @@ public class FRMSimplePrimers extends JFrame{
 		brdLblEdition = new TitledBorder("Информация о редактируемом участке");
 		infoAboutEdited.setBorder(brdLblEdition);
 		
-		leftRenz = new JList<String>(dataLeft);
+		leftRenz = new JList<String>(leftEnz.forList);
 		leftRenz.setLayoutOrientation(JList.VERTICAL);
 		leftRenz.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
@@ -115,7 +104,7 @@ public class FRMSimplePrimers extends JFrame{
 		
 		/////////////
 		
-		rightRenz = new JList<String>(dataRight);
+		rightRenz = new JList<String>(rightEnz.forList);
 		rightRenz.setLayoutOrientation(JList.VERTICAL);
 		rightRenz.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
@@ -152,9 +141,23 @@ public class FRMSimplePrimers extends JFrame{
 		leftRenz.addMouseListener(new java.awt.event.MouseListener(){
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				indLeft=leftRenz.getSelectedIndex();
-				//TODO
-				//////////////////////////////////////////////////////////////////////////////
+				
+				int indLeft=leftRenz.getSelectedIndex();
+				RenzymeWithANumber buf=leftEnz.array[indLeft];
+				
+				//System.out.println(buf.renzyme.getPlace());
+				
+				if (selectedLeft.contains(buf)) {
+					selectedLeft.remove(buf);
+					dehighlight(leftEnz,indLeft);
+				}
+				else {
+					selectedLeft.add(buf);
+					highlight(leftEnz,indLeft);
+				}
+				//TODO//////////////////////////////////////////
+				//какие-то дествия относительно подбора праймеров - добавить
+				// и то же самое для правых рестриктаз
 			}
 
 			public void mouseEntered(MouseEvent arg0) {}
@@ -162,6 +165,34 @@ public class FRMSimplePrimers extends JFrame{
 			public void mousePressed(MouseEvent arg0) {}
 			public void mouseReleased(MouseEvent arg0) {}
 		});
+
+		rightRenz.addMouseListener(new java.awt.event.MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				int indRight=rightRenz.getSelectedIndex();
+				RenzymeWithANumber buf=rightEnz.array[indRight];
+				
+				//System.out.println(buf.toString());
+				
+				if (selectedRight.contains(buf)) {
+					selectedRight.remove(buf);
+					dehighlight(rightEnz,indRight);
+				}
+				else {
+					selectedRight.add(buf);
+					highlight(rightEnz,indRight);
+				}
+				//TODO//////////////////////////////////////////
+				//какие-то дествия относительно подбора праймеров - добавить
+			}
+
+			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+		});
+
 		
 		btnAnalyseFalseSites.addActionListener(new PressedBtnAnalyseFalseSites());		
 		btnFindAutoPrimers.addActionListener(new PressedBtnFindAutoPrimers());
@@ -200,7 +231,7 @@ public class FRMSimplePrimers extends JFrame{
 		    	   try {
 		    		   String str1 = txtEditPrimer.getText();
 		    		   currentlyEdited = new HandMadeDNA(str1); 
-		    		   String str2=String.format("Tm = %.1f C,   GC = %d per cent",currentlyEdited.getTm(),currentlyEdited.getPercentageGC());
+		    		   String str2=String.format("Tm = %.1f C (nearest neighbour),   GC = %d per cent",currentlyEdited.getTm(),currentlyEdited.getPercentageGC());
 		    		   infoAboutEdited.setText(str2);
 		    	   }
 		    	   catch (java.lang.NullPointerException ff) {}
@@ -277,4 +308,69 @@ public class FRMSimplePrimers extends JFrame{
 		setVisible(true);
 	}
 
+	
+	private void highlight(EnzymesWithInfo arrRestr, int ind) {
+		
+		//highlighter for restriction enzymes
+		DefaultHighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+		
+		Object currH;
+		
+		//highlight renzyme
+		int beg=arrRestr.beginings[ind];
+		int end=beg+arrRestr.lengths[ind];
+		try{
+				currH=txtShowGene.getHighlighter().addHighlight(beg, end, redPainter);
+				arrRestr.tags[ind]=currH;
+			}
+		catch (BadLocationException e) {}
+		
+	}
+
+	private void dehighlight(EnzymesWithInfo arrRestr, int ind) {	
+				txtShowGene.getHighlighter().removeHighlight(arrRestr.tags[ind]);
+	}
+
+
+	
+	class EnzymesWithInfo{
+		final int size;
+		boolean ifLeft;
+		RenzymeWithANumber[] array;
+		int[] beginings;
+		int[] lengths;
+		boolean[] ifSelected;
+		Object[] tags;
+		String[] forList;
+		
+		EnzymesWithInfo(RenzymeWithANumber[] arr, boolean ifLeft){
+			size=arr.length;
+			array=arr;
+			this.ifLeft=ifLeft;
+			int i;
+			
+			forList=new String[size];
+			lengths=new int[size];
+			//array with lengths 
+			for (i=0; i<size; i++){
+				lengths[i]=arr[i].renzyme.getPlace().length();
+				forList[i]=arr[i].toString();
+			}
+			
+			//begining in the main molecule
+			beginings=new int[size];
+			if (!ifLeft){
+				for (i=0; i<size; i++) beginings[i]=geneEnd+arr[i].number-lengths[i]+1;
+			}
+			else for (i=0; i<size; i++) beginings[i]=geneBegin-arr[i].number;
+			
+			//initialize remaining variables
+			ifSelected=new boolean[size];
+			tags=new Object[size];
+		}
+		
+	}
+	
 }
+
+
