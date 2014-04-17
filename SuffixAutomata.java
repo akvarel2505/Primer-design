@@ -1,7 +1,8 @@
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by futame on 06.03.14.
@@ -21,11 +22,18 @@ public class SuffixAutomata extends ParentWithMainDNA {
     private int size;
     class State{
         private int len;
+        private int firstpos;
         private int link;
         private int[] next;
         private int cnt;
         public List<Integer> inversedLinks;
 
+        public int getFirstpos() {
+            return firstpos;
+        }
+        public void setFirstpos(int firstpos) {
+            this.firstpos = firstpos;
+        }
         public int getCnt() {
             return cnt;
         }
@@ -36,7 +44,14 @@ public class SuffixAutomata extends ParentWithMainDNA {
             return link;
         }
         public int getNext(int character) {
-            return next[character];
+            try {
+               return next[character];
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Wrong string in suffix automata");
+                e.printStackTrace();
+                return -1;
+            }
         }
         public int getLen() {
             return len;
@@ -59,12 +74,14 @@ public class SuffixAutomata extends ParentWithMainDNA {
             link = -1;
             next = new int[alphabetSize];
             Arrays.fill(next, -1);
+            inversedLinks = new ArrayList<Integer>();
         }
 
         public State getClone(){
             State state = new State();
             state.len = len;
             state.link = link;
+            state.firstpos = firstpos;
             state.next = Arrays.copyOf(next,alphabetSize);
             return state;
         }
@@ -79,6 +96,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
         states[current_vertex] = new State();
         states[current_vertex].setLen(states[last].getLen() + 1);
         states[current_vertex].setCnt(1);
+        states[current_vertex].setFirstpos(states[current_vertex].getLen() - 1);
         int p;
 
         for (p = last; (p != -1) && (states[p].getNext(character) == -1); p = states[p].getLink() ){
@@ -96,6 +114,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
                 states[clone] = states[q].getClone();
                 states[clone].setCnt(0);
                 states[clone].setLen(states[p].getLen() + 1);
+
                 for (; (p != -1) && (states[p].getNext(character) == q); p = states[p].getLink()){
                     states[p].setNext(character, clone);
                 }
@@ -178,7 +197,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
     }
 
     private void depthFirstSearch(int vertex, int [] result, int last) {
-        result[last++] = states[vertex].getLen() - 1;
+        result[last++] = states[vertex].getFirstpos();
 
         for (int nextVertex : states[vertex].inversedLinks) {
             depthFirstSearch(nextVertex, result, last);
@@ -195,7 +214,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
             }
         }
         if (current_vertex == -1) {
-            return null;
+            return new int[0];
         }
 
         int[] result = new int[states[current_vertex].getCnt()];
