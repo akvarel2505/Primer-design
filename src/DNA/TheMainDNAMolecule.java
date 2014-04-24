@@ -1,3 +1,5 @@
+package DNA;
+
 
 public class TheMainDNAMolecule extends ParentWithMainDNA {
 	

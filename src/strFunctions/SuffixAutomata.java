@@ -1,8 +1,10 @@
-import java.lang.reflect.Array;
+package strFunctions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
+
+import DNA.ParentWithMainDNA;
+
 
 /**
  * Created by futame on 06.03.14.
@@ -26,6 +28,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
         private int link;
         private int[] next;
         private int cnt;
+        private boolean isClone;
         public List<Integer> inversedLinks;
 
         public int getFirstpos() {
@@ -72,30 +75,37 @@ public class SuffixAutomata extends ParentWithMainDNA {
         State(){
             len = 0;
             link = -1;
+            isClone = false;
+            cnt = 1;
             next = new int[alphabetSize];
             Arrays.fill(next, -1);
             inversedLinks = new ArrayList<Integer>();
+        }
+
+        public boolean isClone() {
+            return isClone;
         }
 
         public State getClone(){
             State state = new State();
             state.len = len;
             state.link = link;
+            state.isClone = true;
+            state.cnt = 0;
             state.firstpos = firstpos;
             state.next = Arrays.copyOf(next,alphabetSize);
             return state;
         }
     }
 
-    SuffixAutomata(){
+    public SuffixAutomata(){
         s = stringToNum(theMainDNA);
         build();
     }
     private void extend(int character){
-        int current_vertex = size ++;
+        int current_vertex = size++;
         states[current_vertex] = new State();
         states[current_vertex].setLen(states[last].getLen() + 1);
-        states[current_vertex].setCnt(1);
         states[current_vertex].setFirstpos(states[current_vertex].getLen() - 1);
         int p;
 
@@ -112,7 +122,6 @@ public class SuffixAutomata extends ParentWithMainDNA {
             } else {
                 int clone = size++;
                 states[clone] = states[q].getClone();
-                states[clone].setCnt(0);
                 states[clone].setLen(states[p].getLen() + 1);
 
                 for (; (p != -1) && (states[p].getNext(character) == q); p = states[p].getLink()){
@@ -131,7 +140,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
             listsOfStates[i] = new ArrayList<Integer>();
         }
 
-        for (int i = 0;i < size; ++i){
+        for (int i = 0; i < size; ++i){
             listsOfStates[states[i].getLen()].add(i);
         }
         for (int len = s.length; len > 0; --len){
@@ -145,7 +154,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
     private void build(){
         states = new State[2 * s.length];
         states[0] = new State();
-        states[0].setCnt(1);
+        states[0].setCnt(0);
         last = 0;
         size = 1;
 
@@ -196,11 +205,14 @@ public class SuffixAutomata extends ParentWithMainDNA {
         return states[current_vertex].getCnt();
     }
 
-    private void depthFirstSearch(int vertex, int [] result, int last) {
-        result[last++] = states[vertex].getFirstpos();
+    private int sizeForDFS;
+    private void depthFirstSearch(int vertex, int [] result) {
+        if (!states[vertex].isClone()) {
+            result[sizeForDFS++] = states[vertex].getFirstpos();
+        }
 
         for (int nextVertex : states[vertex].inversedLinks) {
-            depthFirstSearch(nextVertex, result, last);
+            depthFirstSearch(nextVertex, result);
         }
     }
 
@@ -218,9 +230,9 @@ public class SuffixAutomata extends ParentWithMainDNA {
         }
 
         int[] result = new int[states[current_vertex].getCnt()];
-        int last = 0;
 
-        depthFirstSearch(current_vertex, result, last);
+        sizeForDFS = 0;
+        depthFirstSearch(current_vertex, result);
 
         for (int i = 0; i < result.length; ++i) {
             result[i] -= t.length - 1;

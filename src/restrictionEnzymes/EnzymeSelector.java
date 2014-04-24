@@ -1,17 +1,21 @@
-    import javax.swing.*;
+package restrictionEnzymes;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-    import javax.swing.table.AbstractTableModel;
-    import javax.swing.table.TableColumn;
-    import java.awt.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
-    import java.io.FileInputStream;
-    import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
-    import java.util.ArrayList;
-    import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by futame on 06.03.14.
@@ -21,15 +25,21 @@ import java.io.FileReader;
 /* Мне нужно добавить названия
  */
 
-public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
+public class EnzymeSelector extends RenzymeParentWithRenzymeMass {
+    static GridBagLayout gridBagLayout = new GridBagLayout();
+    static GridBagConstraints gridBagConstraints = new GridBagConstraints();
     static JFrame eFrame = new JFrame("Select enzyme");
+    
+    /*  Что лучше:
+     *   static boolean[] highlightedRenzymes = new boolean[renzymeArrayList.size()];
+     *   static ArrayList<Renzyme>  highlightedRenzymes = new ArrayList<Renzyme>();
+     *   ?
+    */
+    static JTable table;
+    private static final int columnTableNum = 10;
 
-    static JLabel elblTest = new JLabel("abacaba");
-    private static final int columnNum = 10;
-
-    private static void createMenu(){
+    private static void createMenu() {
         JMenuBar eMenu = new JMenuBar();
-
         JMenu eFile = new JMenu("File");
         eMenu.add(eFile);
 
@@ -43,7 +53,9 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
                 int returnVal = eFileChooser.showOpenDialog(eFrame);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     RenzymeMass.seteSelectedFile(eFileChooser.getSelectedFile());
+                    renzymeArrayList = new RenzymeMass();
                 }
+                createTable1();
             }
         };
 
@@ -80,7 +92,7 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
         ActionListener lstnNewEnzyme = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-             //   NewEnzyme addEnzyme = new NewEnzyme();
+                //   NewEnzyme addEnzyme = new NewEnzyme();
             }
         };
         JMenuItem eNew = new JMenuItem("New enzyme...");
@@ -109,16 +121,18 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
         JMenuItem eShowEnzAndSeq = new JMenuItem("List enzymes + recognition sequences");
         eList.add(eShowEnzAndSeq);
 
-        eFrame.add(eMenu, BorderLayout.BEFORE_FIRST_LINE);
+        eFrame.setJMenuBar(eMenu);
+        
     }
-    private  static void createNorth(){
+
+    private static void createNorth() {
         JPanel northPane = new JPanel();
 
         JLabel elblWindow = new JLabel("Window  ");
         northPane.add(elblWindow);
         //here! I have to do it dynamically
         JComboBox ecbFile = new JComboBox();
-        ecbFile.setPreferredSize(new Dimension(350,20));
+        ecbFile.setPreferredSize(new Dimension(350, 20));
         northPane.add(ecbFile);
 
         //I don't know how to name it, so let's it will be ecbA
@@ -134,26 +148,44 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
         JLabel elblD = new JLabel("Dam/Dcm");
         northPane.add(elblD);
 
-        eFrame.add(northPane, BorderLayout.LINE_START);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        eFrame.add(northPane, gridBagConstraints);
     } //I have to add strings in ComboBox
-    private static void createTable(){
-        ArrayList<Renzyme> renzymes = renzymeArrayList.getMainRenzymeStructure();
+
+    private static void createTable() {
+       /*ArrayList<Renzyme> renzymes = renzymeArrayList.getMainRenzymeStructure();
         JTable etblEnzyme = new JTable();
-        int n = 0;
-        try {
-            n = renzymes.size();
-        }
-        catch (NullPointerException e){
-            //Error!
-        }
+        JScrollPane scrollPane = new JScrollPane(etblEnzyme);
+        int n = renzymes.size();
         int lengthOfRows = (n / columnNum) + 1;
+        int k = 0;
+        Renzyme[] r;
         for (int i = 0; i < columnNum; ++i){
+            if (lengthOfRows < (n - k)) {
+                r = new Renzyme[lengthOfRows];
+            }
+            else {
+                r = new Renzyme[n - k];
+            }
+            for (int j = 0; j < r.length; ++j){
+                if (k < renzymes.size()){
+                    System.out.println(k);
+                    r[j] = renzymes.get(k);
+                }
+                ++k;
+            }
             TableColumn column = new TableColumn();
             etblEnzyme.addColumn(column);
+
         }
-        eFrame.add(etblEnzyme,BorderLayout.PAGE_START);
+        eFrame.add(etblEnzyme,BorderLayout.PAGE_START);*/
     }
-    private static void createBottom(){
+
+    //TODO:
+    private static void createBottom() {
         JPanel bottomPane = new JPanel(new BorderLayout());
         JPanel southPane = new JPanel();
 
@@ -171,7 +203,7 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
 */
         //I have to rename it, because I don't know what it does
         JComboBox ecbAll = new JComboBox();
-        ecbAll.setPreferredSize(new Dimension(80,20));
+        ecbAll.setPreferredSize(new Dimension(80, 20));
         southPane.add(ecbAll);
 
         JButton eSelect = new JButton("Select");
@@ -192,7 +224,7 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
 
         JPanel bottomPane2 = new JPanel(new BorderLayout());
 
-        JPanel lowerPane= new JPanel();
+        JPanel lowerPane = new JPanel();
         JLabel elblPerformAction = new JLabel("Perform action:");
         lowerPane.add(elblPerformAction);
         JButton ebtnGraphicMap = new JButton("Graphic map");
@@ -215,24 +247,61 @@ public class EnzymeSelector extends RenzymeParentWithRenzymeMass{
         JLabel elblOpen = new JLabel("Keep selector dialog open");
         lowestPane.add(elblOpen);
         //eFrame.add(lowestPane, BorderLayout.LINE_END)
-        bottomPane2.add(lowerPane,BorderLayout.NORTH);
-        bottomPane2.add(lowestPane,BorderLayout.EAST);
-        bottomPane.add(southPane,BorderLayout.NORTH);
-        bottomPane.add(bottomPane2,BorderLayout.SOUTH);
-        eFrame.add(bottomPane,BorderLayout.SOUTH);
+        bottomPane2.add(lowerPane, BorderLayout.NORTH);
+        bottomPane2.add(lowestPane, BorderLayout.EAST);
+        bottomPane.add(southPane, BorderLayout.NORTH);
+        bottomPane.add(bottomPane2, BorderLayout.SOUTH);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.anchor = GridBagConstraints.PAGE_END;
+        eFrame.add(bottomPane, gridBagConstraints);
+    }
+
+    private static void createTable1() {
+        if (table != null)
+            eFrame.remove(table);
+        ArrayList<Renzyme> renzymes = renzymeArrayList.getMainRenzymeStructure();
+        int count = renzymes.size();
+        int rowNum = (count + columnTableNum - 1) / columnTableNum;
+        table = new JTable(rowNum, columnTableNum);
+        for (int i = 0; i < columnTableNum; ++i) {
+            for (int j = 0; j < rowNum; ++j) {
+                int numberRenzyme = i * rowNum + j;
+                if (numberRenzyme >= count) {
+                    continue;
+                }
+                System.out.println(renzymes.get(numberRenzyme).toString());
+                table.setValueAt(renzymes.get(numberRenzyme).toString(), j, i);
+            }
+        }
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.weighty = 1;
+        gridBagConstraints.anchor = GridBagConstraints.PAGE_START;
+        eFrame.add(table, gridBagConstraints);
+
+        table.setRowSelectionAllowed(false);
+        table.setColumnSelectionAllowed(false);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setCellSelectionEnabled(true);
+        eFrame.pack();
+        eFrame.setMinimumSize(new Dimension(eFrame.getWidth(), eFrame.getHeight()));
+        eFrame.repaint();
     }
 
 
-    EnzymeSelector(){
-        eFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public EnzymeSelector() {
+        eFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        gridBagLayout.preferredLayoutSize(eFrame);
+        eFrame.setLayout(gridBagLayout);
 
         EnzymeSelector.createNorth();
-        EnzymeSelector.createTable();
+        EnzymeSelector.createTable1();
         EnzymeSelector.createBottom();
         EnzymeSelector.createMenu();
-
-//        eFrame.pack();
-        eFrame.setSize(700, 450);
+        eFrame.pack();
+        eFrame.setMinimumSize(new Dimension(eFrame.getWidth(), eFrame.getHeight()));
         eFrame.setVisible(true);
     }
 

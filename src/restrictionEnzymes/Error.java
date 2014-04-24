@@ -1,3 +1,4 @@
+package restrictionEnzymes;
 import javax.swing.*;
 
 /**

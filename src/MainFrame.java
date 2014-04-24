@@ -7,6 +7,13 @@ import java.util.Scanner;
 
 import javax.swing.*;
 
+import DNA.SimpleExtract;
+import DNA.TheMainDNAMolecule;
+import references.FirstFrame;
+import restrictionEnzymes.EnzymeSelector;
+import restrictionEnzymes.RenzymeMass;
+import frmPrimers.FRMSimplePrimers;
+
 
 public class MainFrame extends JFrame {
 		
@@ -45,23 +52,37 @@ public class MainFrame extends JFrame {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setTitle("Master of primers");
 			
-			btnPrimers.setText("Подобрать праймеры");
-			btnPrimers.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent evt) {
-					//btnPrimersActionPerformed(evt);
+			btnPrimers.setText("Primers");
+			btnPrimers.addActionListener(new java.awt.event.ActionListener(){
+				public void actionPerformed(ActionEvent evt) {
+
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run(){
+							int i,j;
+							i=txtMain.getSelectionStart();
+							j=txtMain.getSelectionEnd();
+							passed=new SimpleExtract(i,j);
+						
+							RenzymeMass restrictionEnzymesNearGene = new RenzymeMass();
+						
+							FRMSimplePrimers x = new FRMSimplePrimers(passed, restrictionEnzymesNearGene);
+						}
+					});
+				
 				}
 			});
+
 			
-			btnRestrictaza.setText("Подобрать рестриктазу");
+			btnRestrictaza.setText("Restriction Enzymes");
 			btnRestrictaza.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-					//btnRestrictazaActionPerformed(evt);
+					EnzymeSelector e = new EnzymeSelector();
 				}
 			});
-			btnCertificate.setText("Открыть справку");
+			btnCertificate.setText("References");
 			btnCertificate.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-			//btnCertificateActionPerformed(evt);
+			 FirstFrame x=new FirstFrame();
 			}
 			});
 			
@@ -74,7 +95,7 @@ public class MainFrame extends JFrame {
 			
 			String zy="";
 			try{
-				FileInputStream fileStream = new FileInputStream("input.raw");
+				FileInputStream fileStream = new FileInputStream("input.txt");
 				Scanner scanner = new Scanner(fileStream);
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
@@ -110,27 +131,27 @@ public class MainFrame extends JFrame {
 			menuBar = new JMenuBar();
 
 			//Build the first menu.
-			menu = new JMenu("Меню");
+			menu = new JMenu("Menu");
 			menu.setMnemonic(KeyEvent.VK_A);
 			menuBar.add(menu);
 
 			//a group of JMenuItems
-			menuItem = new JMenuItem("Открыть файл",
+			menuItem = new JMenuItem("Open",
 			                         KeyEvent.VK_T);
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(
 			        KeyEvent.VK_1, ActionEvent.ALT_MASK));
 			menu.add(menuItem);
 
-			menuItem = new JMenuItem("Создать новый");
+			menuItem = new JMenuItem("Create new");
 			menuItem.setMnemonic(KeyEvent.VK_B);
 			menu.add(menuItem);
 
-			cbMenuItem = new JCheckBoxMenuItem("Сохранить изменения");
+			cbMenuItem = new JCheckBoxMenuItem("Save");
 			cbMenuItem.setMnemonic(KeyEvent.VK_H);
 			menu.add(cbMenuItem);
 
 			//Build second menu "Edition"
-			menu = new JMenu("Редактировать");
+			menu = new JMenu("Edit");
 			menu.setMnemonic(KeyEvent.VK_N);
 			menuBar.add(menu);
 			this.setJMenuBar(menuBar);
@@ -143,25 +164,7 @@ public class MainFrame extends JFrame {
 				
 		
 			//обработка нажатия на кнопку. Вообще хорошо бы этот класс сделать нормальным, а не анонимным
-			btnPrimers.addActionListener(new java.awt.event.ActionListener(){
-				public void actionPerformed(ActionEvent evt) {
-
-					SwingUtilities.invokeLater(new Runnable(){
-						public void run(){
-							int i,j;
-							i=txtMain.getSelectionStart();
-							j=txtMain.getSelectionEnd();
-							passed=new SimpleExtract(i,j);
-						
-							RenzymeMass restrictionEnzymesNearGene = new RenzymeMass();
-						
-							FRMSimplePrimers x = new FRMSimplePrimers(passed, restrictionEnzymesNearGene);
-						}
-					});
-				
-				}
-			});
-		
+					
 			//DESIGN
 			GroupLayout layout = new GroupLayout(contentPane);
 			contentPane.setLayout(layout);

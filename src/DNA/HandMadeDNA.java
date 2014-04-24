@@ -1,3 +1,5 @@
+package DNA;
+
 
 
 public class HandMadeDNA extends AbstractDNA{
@@ -6,7 +8,7 @@ public class HandMadeDNA extends AbstractDNA{
 	
 	public HandMadeDNA(String s){
 		sequence=s;
-		Tm=calculateTm(200,50,0);
+		Tm=calculateTm();
 		percentageGC=percentageGC();
 	}
 	
@@ -16,5 +18,9 @@ public class HandMadeDNA extends AbstractDNA{
 	
 	protected void findFalseSites(){ //find, but not return
 		
+	}
+
+	public int getLength() {
+		return sequence.length();
 	}
 }

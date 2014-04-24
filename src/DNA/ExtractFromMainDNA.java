@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-
+package DNA;
 
 public class ExtractFromMainDNA extends AbstractDNA{
 
@@ -8,7 +7,7 @@ public class ExtractFromMainDNA extends AbstractDNA{
 	public ExtractFromMainDNA(int b, int e){
 		beg=b;
 		end=e;
-		Tm=calculateTm(200,50,0);
+		Tm=calculateTm();
 		percentageGC=percentageGC();
 	}
 	

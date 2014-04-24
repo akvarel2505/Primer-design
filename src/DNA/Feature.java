@@ -1,3 +1,5 @@
+package DNA;
+
 
 public class Feature extends SimpleExtract{
 

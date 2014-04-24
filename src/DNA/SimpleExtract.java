@@ -1,8 +1,9 @@
+package DNA;
 
 public class SimpleExtract extends ParentWithMainDNA{
 	private int begin,end;
 	
-	SimpleExtract(int b, int e){
+	public SimpleExtract(int b, int e){
 		begin=b;
 		end=e;
 	}

@@ -1,3 +1,4 @@
+package DNA;
 import java.util.ArrayList;
 
 public abstract class AbstractDNA extends ParentWithMainDNA{
@@ -6,7 +7,6 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 	final String ntides[] = {"aa",      "ac",       "ag",          "at",        "ca",        "cc",         "cg",             "ct",       "ga",          "gc",       "gg",         "gt",        "ta",        "tc",             "tg",             "tt"};
 	final float dH[] = {(float)-7.9, (float)-8.4,  (float)-7.8,  (float)-7.2 , (float)-8.5, (float)-8,    (float)-10.6,  (float)-7.8, (float)-8.2,   (float)-9.8, (float)-8,   (float)-8.4,  (float)-7.2,  (float)-8.2,   (float)-8.5 ,    (float)-7.9};
 	final float dS[] = {(float)-22.2,(float)-22.4, (float)-21, (float)-20.4 , (float)-22.7, (float)-19.9, (float)-27.2, (float)-21.0, (float)-22.2, (float)-24.4, (float)-19.9, (float)-22.4, (float)-21.3, (float)-22.2, (float)-22.7,   (float)-22.2};
-	
 	
 	protected float Tm;
 	protected int percentageGC;
@@ -27,14 +27,14 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 		return res;
 	}
 	
-	protected float calculateTm(float primerConc, float salt, float mg){
+	protected float calculateTm(){
 		
 		String str = toString();
 		double res=0;
 		
-		primerConc=200;
-		salt=50;
-		mg=0;		
+		float primerConc=EnvironmentConstants.primerConc;
+		float salt=EnvironmentConstants.saltConc;
+		float mg=EnvironmentConstants.MgConc;		
 		
 		float H=0;
 		float S=0;
@@ -56,6 +56,7 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
         S+=(0.368 * (str.length()-1) * Math.log(salt_effect));
         
 		//base pairs, nearest neighbour
+        try{
         int i;
 		for (i=0; i<(str.length()-1); i++){
 			int j=0;
@@ -66,7 +67,11 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 			S+=dS[j];
 		}
 		
-		res=((1000*H)/(S+(1.987*Math.log(primerConc/2000000000))))-273.15;	
+		res=((1000*H)/(S+(1.987*Math.log(primerConc/2000000000))))-273.15;
+        }
+        
+        catch (java.lang.ArrayIndexOutOfBoundsException e) {res=-1234;}
+			
 		return (float)res;
 	}
 	

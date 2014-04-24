@@ -1,3 +1,4 @@
+package DNA;
 
 public abstract class ParentWithMainDNA {
 	protected static String theMainDNA;
@@ -10,5 +11,9 @@ public abstract class ParentWithMainDNA {
 	
 	public String getMainDNA(){
 		return theMainDNA;
+	}
+	
+	public static int getLengthOfMainDNA(){
+		return theMainDNA.length();
 	}
 }
