@@ -27,7 +27,7 @@ public class PNLSolutionParameters extends JPanel{
 		txtMgConc = new JTextField(String.format("%.0f", EnvironmentConstants.MgConc));
 		frmParent=parent;
 		
-		//button apply listener //TODO
+		//button apply listener
 		btnApply.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				EnvironmentConstants.primerConc=Float.parseFloat(txtPrimerConc.getText());
@@ -90,6 +90,24 @@ public class PNLSolutionParameters extends JPanel{
 		layout.linkSize(lblPrimerConc, lblSaltConc, lblMgConc);
 		layout.linkSize(txtPrimerConc, txtSaltConc, txtMgConc);
 		
+		enableEdit();
 		setVisible(true);
+		
+		EnvironmentConstants.pnlSolutionParameters = this;
 	}
+	
+	public void enableEdit(){
+		txtPrimerConc.setEditable(true);
+		txtSaltConc.setEditable(true);
+		txtMgConc.setEditable(true);
+		btnApply.setEnabled(true);
+	}
+	
+	public void disableEdit(){
+		txtPrimerConc.setEditable(false);
+		txtSaltConc.setEditable(false);
+		txtMgConc.setEditable(false);
+		btnApply.setEnabled(false);
+	}
+	
 }

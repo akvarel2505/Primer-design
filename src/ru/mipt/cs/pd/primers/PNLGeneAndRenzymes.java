@@ -19,8 +19,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
-import ru.mipt.cs.pd.dna.HandMadeDNA;
 import ru.mipt.cs.pd.dna.SimpleExtract;
+import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
+import ru.mipt.cs.pd.primers.alg.PressedBtnFindAutoPrimers;
+import ru.mipt.cs.pd.primers.alg.PressedBtnFindSecondPrimer;
 import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
 import ru.mipt.cs.pd.restrictases.RenzymeMass;
 import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
@@ -33,11 +35,11 @@ public class PNLGeneAndRenzymes extends JPanel{
 	private JTextArea txtShowGene;
 	private JList<String> leftRenz, rightRenz;
 	private JScrollPane scrlRight, scrlLeft, GeneScrollPane;
-	private TitledBorder brdLeft, brdRight;
+	private TitledBorder brdLeft, brdRight, brdGene;
 	
 	private ArrayList<RenzymeWithANumber> selectedRight, selectedLeft; 
-	private ArrayList<RenzymeWithANumber> selectedRestr[];
 	private int geneBegin, geneEnd;
+	private Object geneTag;
 	private EnzymesWithInfo leftEnz, rightEnz;
 
 	private intFRMSimplePrimers parentFrame;
@@ -114,6 +116,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 		txtShowGene.setText(stringGene);
 		txtShowGene.setCaretPosition(0);
 		txtShowGene.setLineWrap(true);
+		brdGene = new TitledBorder(LabelsEN.dna53);
+		txtShowGene.setBorder(brdGene);
+		
 		
 		
 		// now add txtShowGene to a scroll pane
@@ -224,32 +229,20 @@ public class PNLGeneAndRenzymes extends JPanel{
 				JLabel infoAboutEdited = parentFrame.getInfoAboutEdited();
 				try {
 					txtEditPrimer.setText(txtShowGene.getSelectedText());
-					HandMadeDNA currentlyEdited = new HandMadeDNA(txtEditPrimer.getText());
-					String str=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getPercentageGC(), currentlyEdited.getLength());
+					HandMadePrimer currentlyEdited = new HandMadePrimer(txtEditPrimer.getText());
+					String str=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getLength(), currentlyEdited.getPercentageGC());
 					infoAboutEdited.setText(str);
+					parentFrame.getPNLEditedExtract().setPrimer(currentlyEdited);
 				}
-				catch (java.lang.NullPointerException e){
-					
-				}
-				catch (java.lang.StringIndexOutOfBoundsException e){
-					
-				}
+				catch (java.lang.NullPointerException e){}
+				catch (java.lang.StringIndexOutOfBoundsException e){}
 			}
 		});
 
 		///
+		highlightGene();
 		highlightAll(leftEnz);
 		highlightAll(rightEnz);
-		
-		//highlighter for gene
-				DefaultHighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.green);
-				
-				//highlight gene
-				try{
-					txtShowGene.getHighlighter().addHighlight(gene.getBegin(), gene.getEnd(), yellowPainter);
-				}
-				catch (BadLocationException e) {}
-				
 				
 				
 				
@@ -423,11 +416,11 @@ public class PNLGeneAndRenzymes extends JPanel{
 	
 	private void highlight(EnzymesWithInfo arrRestr, int ind) {
 		
+		dehighlightGene();
 		arrRestr.ifSelected[ind]=true;
 		//highlighter for restriction enzymes
 		DefaultHighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
 		//for insignificant sites
-		//TODO 
 		DefaultHighlightPainter pinkPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 		
 		Object currH;
@@ -443,14 +436,14 @@ public class PNLGeneAndRenzymes extends JPanel{
 				int kOthers=arrRestr.sizesOther[ind];
 				for (int i=0; i<kOthers; i++){
 					beg=arrRestr.begOfOther[ind][i];
-					end=beg+len;
+					end=beg+2;
 					currH=txtShowGene.getHighlighter().addHighlight(beg, end, pinkPainter);
 					arrRestr.tagsOfOther[ind][i]=currH;
 				}
 		
 		}
 		catch (BadLocationException e) {}
-		
+		highlightGene();
 	}
 
 	private void highlightAll(EnzymesWithInfo arrRestr) {
@@ -465,6 +458,7 @@ public class PNLGeneAndRenzymes extends JPanel{
 				else selectedRight.add(arrRestr.array[i]);
 			}
 		}
+		
 	}
 		
 	
@@ -491,5 +485,21 @@ public class PNLGeneAndRenzymes extends JPanel{
 				else selectedRight.remove(arrRestr.array[i]);
 			}
 		}
+	}
+	
+	private void highlightGene(){
+		//highlighter for gene
+		DefaultHighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.green);
+		
+		//highlight gene
+		try{
+			geneTag=txtShowGene.getHighlighter().addHighlight(geneBegin, geneEnd, yellowPainter);
+		}
+		catch (BadLocationException e) {}
+		
+	}
+	
+	private void dehighlightGene(){
+		txtShowGene.getHighlighter().removeHighlight(geneTag);
 	}
 }

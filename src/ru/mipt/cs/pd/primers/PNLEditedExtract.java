@@ -9,7 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import ru.mipt.cs.pd.dna.HandMadeDNA;
+import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
+import ru.mipt.cs.pd.dna.primers.Primer;
 import ru.mipt.cs.pd.primers.interfaces.intPnlEditedExtract;
 import ru.mipt.cs.pd.references.FirstFrame;
 
@@ -18,15 +19,33 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 	private JButton btnAnalyseFalseSites, btnReference;  //twoBut
 	private JTextField txtEditPrimer;
 	private JLabel infoAboutEdited;
+	private Primer primer;
+	private HandMadePrimer currentlyEdited;
 	
-	private HandMadeDNA currentlyEdited; 
+	public Primer getPrimer() {
+		return primer;
+	}
+	
+	public void setPrimer(Primer x) {
+		primer=x;
+	}
 	
 	public PNLEditedExtract(){
 		
 		txtEditPrimer=new JTextField(LabelsEN.initHandPrimer);
 		
 		btnAnalyseFalseSites = new JButton(LabelsEN.btnAnalyseFalseSites);
-		btnAnalyseFalseSites.addActionListener(new PressedBtnAnalyseFalseSites());		
+		
+		btnAnalyseFalseSites.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				
+			try{
+				primer.findFalseSites();
+				FRMPrimerInfo x = new FRMPrimerInfo(primer);
+			}
+			catch (NullPointerException e){}	
+			}
+		});
 		
 		btnReference = new JButton(LabelsEN.reference);
 		btnReference.addActionListener(new java.awt.event.ActionListener() {
@@ -46,8 +65,8 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 		    	   try {
 		    		   setInfoAboutEdited();
 		    	   }
-		    	   catch (java.lang.NullPointerException ff) {ff.printStackTrace();}
-		    	   catch (java.lang.StringIndexOutOfBoundsException ff){System.out.println("CCC");}
+		    	   catch (java.lang.NullPointerException ff) {/*ff.printStackTrace();*/}
+		    	   catch (java.lang.StringIndexOutOfBoundsException ff){/*ff.printStackTrace();*/}
 		       }
 		});
 		
@@ -110,10 +129,11 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 
 	@Override
 	public void setInfoAboutEdited() {
-		   String str1 = txtEditPrimer.getText();
-		   currentlyEdited = new HandMadeDNA(str1); 
-		   String str2=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getPercentageGC(), currentlyEdited.getLength());
-		   infoAboutEdited.setText(str2);	
+		   String str1 = txtEditPrimer.getText().trim();
+		   currentlyEdited = new HandMadePrimer(str1); 
+		   String str2=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getLength(), currentlyEdited.getPercentageGC());
+		   infoAboutEdited.setText(str2);
+		   primer = currentlyEdited;
 	}
-	
+
 }

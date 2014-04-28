@@ -106,6 +106,11 @@ public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
 		editedExtract.setInfoAboutEdited();
 	}
 
+	@Override
+	public PNLEditedExtract getPNLEditedExtract() {
+		return editedExtract;
+	}
+
 
 	
 }

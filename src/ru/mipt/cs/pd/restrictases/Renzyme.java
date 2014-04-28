@@ -61,7 +61,7 @@ public class Renzyme {
         return 0;
     }
 
-    public String inverse(String s){
+    public static String inverse(String s){
         char[] s1 = new char[s.length()];
         for (int i = 0;i < s.length(); ++i){
             switch (s.charAt(i)){

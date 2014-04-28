@@ -1,5 +1,4 @@
 package ru.mipt.cs.pd.dna;
-import java.util.ArrayList;
 
 public abstract class AbstractDNA extends ParentWithMainDNA{
 	
@@ -9,21 +8,23 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 	final float dS[] = {(float)-22.2,(float)-22.4, (float)-21, (float)-20.4 , (float)-22.7, (float)-19.9, (float)-27.2, (float)-21.0, (float)-22.2, (float)-24.4, (float)-19.9, (float)-22.4, (float)-21.3, (float)-22.2, (float)-22.7,   (float)-22.2};
 	
 	protected float Tm;
-	protected int percentageGC;
-	protected ArrayList<ExtractFromMainDNA> falseSites;//это здесь надо?
+	protected float percentageGC;
+	public abstract String toString();
+	public abstract int getLength();
 	
-	public abstract String toString();	
-	protected abstract void findFalseSites();
-	
-	protected int percentageGC(){
-		int i, res, gc=0;
+	protected float percentageGC(){
+		int i, gc=0;
+		float res;
 		String str=toString();
 		for (i=0; i<str.length(); i++){
 			if ("GcgC".contains(str.substring(i,i+1))){
 				gc++;
 			}
 		}
-		res=100*gc/str.length();
+			
+		res=100*(float)gc/(float)str.length();
+		percentageGC=res;
+		
 		return res;
 	}
 	
@@ -81,15 +82,10 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 		return Tm;
 	};
 	
-	public int getPercentageGC(){
+	public float getPercentageGC(){
 		return percentageGC;
 	};
 	
-	public ExtractFromMainDNA[] getFalseSites(){
-		ExtractFromMainDNA res[] = new ExtractFromMainDNA[falseSites.size()];  
-		falseSites.toArray(res);
-		return res;
-	}
 	
 }
 
