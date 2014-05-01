@@ -1,14 +1,14 @@
 package ru.mipt.cs.pd;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.File;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -21,14 +21,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import ru.mipt.cs.pd.dna.SimpleExtract;
-import ru.mipt.cs.pd.dna.TheMainDNAMolecule;
-import ru.mipt.cs.pd.primers.FRMSimplePrimers;
-import ru.mipt.cs.pd.references.FirstFrame;
-import ru.mipt.cs.pd.restrictases.EnzymeSelector;
-import ru.mipt.cs.pd.restrictases.RenzymeMass;
-
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ActionListener{
 
 	// components
 	private JPanel contentPane;
@@ -37,10 +30,19 @@ public class MainFrame extends JFrame {
 	private JButton btnCertificate;
 	private JTextArea txtMain;
 	private JScrollPane scrlMain;
+	private JFileChooser fc;
+	private MainFrame Self=this;
 
 	// objects
 	private SimpleExtract passed;
 
+	JMenuBar menuBar;
+	JMenu menu, submenu;
+	JMenuItem menuItemOpen, menuItemNew, menuItemSave;
+	JRadioButtonMenuItem rbMenuItem;
+	JCheckBoxMenuItem cbMenuItem;
+
+	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -53,6 +55,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
+	
 
 	private void initComponents() {
 
@@ -62,10 +65,104 @@ public class MainFrame extends JFrame {
 		btnRestrictaza = new JButton();
 		btnCertificate = new JButton();
 
+		fc=new JFileChooser();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Master of primers");
 
-		btnPrimers.setText("Primers");
+		btnPrimers.setText("Подобрать праймеры");
+		btnPrimers.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				// btnPrimersActionPerformed(evt);
+			}
+		});
+
+		btnRestrictaza.setText("Подобрать рестриктазу");
+		btnRestrictaza.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				// btnRestrictazaActionPerformed(evt);
+			}
+		});
+		btnCertificate.setText("Открыть справку");
+		btnCertificate.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				// btnCertificateActionPerformed(evt);
+			}
+		});
+
+	}
+
+	public MainFrame() {
+
+		initComponents();
+
+		setBounds(100, 100, 450, 300);
+
+		
+
+		txtMain = new JTextArea(InputFile.zy);
+		txtMain.setLineWrap(true);
+
+		scrlMain = new JScrollPane(txtMain);
+		scrlMain.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrlMain.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		// ///////////////////////
+		// creating the menu
+		
+		// Create the menu bar.
+		menuBar = new JMenuBar();
+
+		// Build the first menu.
+		menu = new JMenu("Меню");
+		menu.setMnemonic(KeyEvent.VK_A);
+		menuBar.add(menu);
+
+		// a group of JMenuItems
+		menuItemOpen = new JMenuItem("Открыть файл", KeyEvent.VK_T);
+		menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
+				ActionEvent.ALT_MASK));
+		menu.add(menuItemOpen);
+		menuItemOpen.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Self.actionPerformed(arg0);
+				
+			}
+			
+		});
+
+		menuItemNew = new JMenuItem("Создать новый");
+		menuItemNew.setMnemonic(KeyEvent.VK_B);
+		menu.add(menuItemNew);
+
+		cbMenuItem = new JCheckBoxMenuItem("Сохранить изменения");
+		cbMenuItem.setMnemonic(KeyEvent.VK_H);
+		menu.add(cbMenuItem);
+
+		// Build second menu "Edition"
+		menu = new JMenu("Редактировать");
+		menu.setMnemonic(KeyEvent.VK_N);
+		menuBar.add(menu);
+		
+		
+		this.setJMenuBar(menuBar);
+		// ///////////////////////////////////
+		
+		//////////////////////
+		// describing open and save buttons
+		final String newline = "\n";
+
+		///////////////////////////////
+
+		contentPane.add(btnPrimers);
+		contentPane.add(scrlMain);
+
+		TheMainDNAMolecule zyyy = new TheMainDNAMolecule(txtMain.getText());
+
+		// обработка нажатия на кнопку. Вообще хорошо бы этот класс сделать
+		// нормальным, а не анонимным
 		btnPrimers.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 
@@ -79,102 +176,12 @@ public class MainFrame extends JFrame {
 						RenzymeMass restrictionEnzymesNearGene = new RenzymeMass();
 
 						FRMSimplePrimers x = new FRMSimplePrimers(passed,
-								restrictionEnzymesNearGene);
+								restrictionEnzymesNearGene); 
 					}
 				});
 
 			}
 		});
-
-		btnRestrictaza.setText("Restriction Enzymes");
-		btnRestrictaza.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				EnzymeSelector e = new EnzymeSelector();
-			}
-		});
-		btnCertificate.setText("References");
-		btnCertificate.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				FirstFrame x = new FirstFrame();
-			}
-		});
-
-	}
-
-	public MainFrame() {
-
-		initComponents();
-
-		setBounds(100, 100, 450, 300);
-
-		String zy = "";
-		try {
-			FileInputStream fileStream = new FileInputStream("input.txt");
-			Scanner scanner = new Scanner(fileStream);
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				zy = zy + line;
-				System.out.println(line);
-				System.out.println(zy);
-				System.out.println();
-			}
-			scanner.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		txtMain = new JTextArea(zy);
-		txtMain.setLineWrap(true);
-
-		scrlMain = new JScrollPane(txtMain);
-		scrlMain.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrlMain.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-		// ///////////////////////
-		// creating the menu
-		JMenuBar menuBar;
-		JMenu menu, submenu;
-		JMenuItem menuItem;
-		JRadioButtonMenuItem rbMenuItem;
-		JCheckBoxMenuItem cbMenuItem;
-
-		// Create the menu bar.
-		menuBar = new JMenuBar();
-
-		// Build the first menu.
-		menu = new JMenu("Menu");
-		menu.setMnemonic(KeyEvent.VK_A);
-		menuBar.add(menu);
-
-		// a group of JMenuItems
-		menuItem = new JMenuItem("Open", KeyEvent.VK_T);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-				ActionEvent.ALT_MASK));
-		menu.add(menuItem);
-
-		menuItem = new JMenuItem("Create new");
-		menuItem.setMnemonic(KeyEvent.VK_B);
-		menu.add(menuItem);
-
-		cbMenuItem = new JCheckBoxMenuItem("Save");
-		cbMenuItem.setMnemonic(KeyEvent.VK_H);
-		menu.add(cbMenuItem);
-
-		// Build second menu "Edition"
-		menu = new JMenu("Edit");
-		menu.setMnemonic(KeyEvent.VK_N);
-		menuBar.add(menu);
-		this.setJMenuBar(menuBar);
-		// ///////////////////////////////////
-
-		contentPane.add(btnPrimers);
-		contentPane.add(scrlMain);
-
-		TheMainDNAMolecule zyyy = new TheMainDNAMolecule(txtMain.getText());
-
-		// обработка нажатия на кнопку. Вообще
-		// хорошо бы этот класс сделать
-		// нормальным, а не анонимным
 
 		// DESIGN
 		GroupLayout layout = new GroupLayout(contentPane);
@@ -199,4 +206,37 @@ public class MainFrame extends JFrame {
 		layout.setVerticalGroup(VertGroup);
 	}
 
-}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		 
+        //Handle open button action.
+        if (e.getSource() == menuItemOpen) {
+        	System.out.println("some");
+            int returnVal = fc.showOpenDialog(Self);
+ 
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                //This is where a real application would open the file.
+                String name = file.getName();
+            	String format="";
+            	int i = 0, k;
+            	while (i < name.length()){
+            		if (name.charAt(i) == '.'){
+            			k = i + 1;
+            			format=name.substring(k);
+            		}
+            		i++;
+            	}
+            	System.out.println(format);
+            
+        //Handle save button action.
+       // } else if (e.getSource() == menuItemSave) {
+         //   int returnVal = fc.showSaveDialog(MainFrame.this);
+            
+            
+            }
+            }
+        }
+	}    
+
