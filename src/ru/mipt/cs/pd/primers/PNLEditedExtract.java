@@ -9,8 +9,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
 import ru.mipt.cs.pd.dna.primers.Primer;
+import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
 import ru.mipt.cs.pd.primers.interfaces.intPnlEditedExtract;
 import ru.mipt.cs.pd.references.FirstFrame;
 
@@ -21,6 +23,7 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 	private JLabel infoAboutEdited;
 	private Primer primer;
 	private HandMadePrimer currentlyEdited;
+	private intFRMSimplePrimers parent;
 	
 	public Primer getPrimer() {
 		return primer;
@@ -30,20 +33,24 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 		primer=x;
 	}
 	
-	public PNLEditedExtract(){
+	public PNLEditedExtract(intFRMSimplePrimers x){
 		
+		parent=x;
 		txtEditPrimer=new JTextField(LabelsEN.initHandPrimer);
 		
 		btnAnalyseFalseSites = new JButton(LabelsEN.btnAnalyseFalseSites);
 		
 		btnAnalyseFalseSites.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
-			try{
-				primer.findFalseSites();
-				FRMPrimerInfo x = new FRMPrimerInfo(primer);
-			}
-			catch (NullPointerException e){}	
+
+			public void actionPerformed(java.awt.event.ActionEvent evt) {				
+				try{
+					if (Environment.DNAs.contains(primer)){}
+					else{
+						Environment.DNAs.add(primer);
+					}
+					FRMPrimerInfo x = new FRMPrimerInfo(primer, parent.getDefaultListModel(), Environment.leftPrimers);
+				}
+				catch (NullPointerException e){}
 			}
 		});
 		
@@ -58,62 +65,19 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 		infoAboutEdited = new JLabel(LabelsEN.infoAboutEdited);
 		
 	
-		txtEditPrimer.addKeyListener(new java.awt.event.KeyAdapter() {
-			
-		       public void keyReleased(KeyEvent e) {
-		 
+		txtEditPrimer.addKeyListener(new java.awt.event.KeyAdapter() {			
+		       public void keyReleased(KeyEvent e) {		 
 		    	   try {
 		    		   setInfoAboutEdited();
 		    	   }
-		    	   catch (java.lang.NullPointerException ff) {/*ff.printStackTrace();*/}
-		    	   catch (java.lang.StringIndexOutOfBoundsException ff){/*ff.printStackTrace();*/}
+		    	   catch (java.lang.NullPointerException ff) {}
+		    	   catch (java.lang.StringIndexOutOfBoundsException ff){}
+		    	   
 		       }
 		});
 		
 		
-		//Design
-		GroupLayout layout = new GroupLayout(this);
-		setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		
-		//Vertical Group
-		GroupLayout.ParallelGroup Vert = layout.createParallelGroup();
-		
-		GroupLayout.SequentialGroup primerWithLabel = layout.createSequentialGroup();
-		primerWithLabel.addComponent(infoAboutEdited);
-		primerWithLabel.addComponent(txtEditPrimer);
-		
-		GroupLayout.SequentialGroup twoBut = layout.createSequentialGroup();
-		twoBut.addComponent(btnAnalyseFalseSites);
-		twoBut.addComponent(btnReference);
-		
-		Vert.addGroup(GroupLayout.Alignment.TRAILING, primerWithLabel);
-		Vert.addGroup(GroupLayout.Alignment.TRAILING, twoBut);
-		
-		layout.setVerticalGroup(Vert);
-		
-		//Horizontal Group
-		
-		GroupLayout.SequentialGroup Hor = layout.createSequentialGroup();
-		
-		GroupLayout.ParallelGroup VprimerWithLabel = layout.createParallelGroup();
-		VprimerWithLabel.addComponent(infoAboutEdited);
-		VprimerWithLabel.addComponent(txtEditPrimer);
-		
-		GroupLayout.ParallelGroup VtwoBut = layout.createParallelGroup();
-		VtwoBut.addComponent(btnAnalyseFalseSites);
-		VtwoBut.addComponent(btnReference);
-		
-		Hor.addGroup(VprimerWithLabel);
-	    Hor.addGroup(VtwoBut);
-		
-		layout.setHorizontalGroup(Hor);
-		
-		layout.linkSize(btnAnalyseFalseSites, btnReference);
-		layout.linkSize(SwingConstants.VERTICAL, txtEditPrimer, btnReference, infoAboutEdited);
-		
+		makeDesign();		
 		setVisible(true);
 	}
 
@@ -129,11 +93,61 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 
 	@Override
 	public void setInfoAboutEdited() {
+		    try{
+				primer.die();
+			}
+		    catch (java.lang.NullPointerException e){}
 		   String str1 = txtEditPrimer.getText().trim();
 		   currentlyEdited = new HandMadePrimer(str1); 
 		   String str2=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getLength(), currentlyEdited.getPercentageGC());
 		   infoAboutEdited.setText(str2);
 		   primer = currentlyEdited;
+	}
+	
+	private void makeDesign(){
+		//Design
+				GroupLayout layout = new GroupLayout(this);
+				setLayout(layout);
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+				
+				
+				//Vertical Group
+				GroupLayout.ParallelGroup Vert = layout.createParallelGroup();
+				
+				GroupLayout.SequentialGroup primerWithLabel = layout.createSequentialGroup();
+				primerWithLabel.addComponent(infoAboutEdited);
+				primerWithLabel.addComponent(txtEditPrimer);
+				
+				GroupLayout.SequentialGroup twoBut = layout.createSequentialGroup();
+				twoBut.addComponent(btnAnalyseFalseSites);
+				twoBut.addComponent(btnReference);
+				
+				Vert.addGroup(GroupLayout.Alignment.TRAILING, primerWithLabel);
+				Vert.addGroup(GroupLayout.Alignment.TRAILING, twoBut);
+				
+				layout.setVerticalGroup(Vert);
+				
+				//Horizontal Group
+				
+				GroupLayout.SequentialGroup Hor = layout.createSequentialGroup();
+				
+				GroupLayout.ParallelGroup VprimerWithLabel = layout.createParallelGroup();
+				VprimerWithLabel.addComponent(infoAboutEdited);
+				VprimerWithLabel.addComponent(txtEditPrimer);
+				
+				GroupLayout.ParallelGroup VtwoBut = layout.createParallelGroup();
+				VtwoBut.addComponent(btnAnalyseFalseSites);
+				VtwoBut.addComponent(btnReference);
+				
+				Hor.addGroup(VprimerWithLabel);
+			    Hor.addGroup(VtwoBut);
+				
+				layout.setHorizontalGroup(Hor);
+				
+				layout.linkSize(btnAnalyseFalseSites, btnReference);
+				layout.linkSize(SwingConstants.VERTICAL, txtEditPrimer, btnReference, infoAboutEdited);
+
 	}
 
 }

@@ -1,7 +1,5 @@
 package ru.mipt.cs.pd.dna;
 
-
-
 public class TheMainDNAMolecule extends ParentWithMainDNA {
 	
 	protected int currentShunt;

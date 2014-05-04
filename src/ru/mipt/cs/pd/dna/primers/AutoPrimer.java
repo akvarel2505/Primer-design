@@ -1,7 +1,7 @@
 package ru.mipt.cs.pd.dna.primers;
 
 import ru.mipt.cs.pd.dna.AbstractDNA;
-import ru.mipt.cs.pd.dna.EnvironmentConstants;
+import ru.mipt.cs.pd.dna.Environment;
 
 public class AutoPrimer extends Primer{
 
@@ -12,7 +12,7 @@ public class AutoPrimer extends Primer{
 		end=e;
 		calculateTm();
 		percentageGC();
-		ru.mipt.cs.pd.dna.EnvironmentConstants.DNAs.add(this);
+		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
 		findFalseSites();
 	}
 	

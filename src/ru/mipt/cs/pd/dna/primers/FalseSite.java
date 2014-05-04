@@ -1,6 +1,7 @@
 package ru.mipt.cs.pd.dna.primers;
 
 import ru.mipt.cs.pd.dna.AbstractDNA;
+import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.primers.LabelsEN;
 import ru.mipt.cs.pd.utils.DNAStringUtils;
 
@@ -17,7 +18,7 @@ public class FalseSite extends AbstractDNA{
 		this.strand=strand;
 		calculateTm();
 		percentageGC();
-		ru.mipt.cs.pd.dna.EnvironmentConstants.DNAs.add(this);
+		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
 	}
 	
 	public String toString(){ //for calculations
@@ -31,7 +32,13 @@ public class FalseSite extends AbstractDNA{
 		return res;
 	}
 	
-	// end of code
+	//TODO
+	//calculateTm() - another method
+	
+	public void die(){
+		Environment.DNAs.remove(this);
+	}
+	
 	//getters
 	//
 	

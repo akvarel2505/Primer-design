@@ -33,9 +33,9 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 		String str = toString();
 		double res=0;
 		
-		float primerConc=EnvironmentConstants.primerConc;
-		float salt=EnvironmentConstants.saltConc;
-		float mg=EnvironmentConstants.MgConc;		
+		float primerConc=Environment.primerConc;
+		float salt=Environment.saltConc;
+		float mg=Environment.MgConc;		
 		
 		float H=0;
 		float S=0;
@@ -85,7 +85,6 @@ public abstract class AbstractDNA extends ParentWithMainDNA{
 	public float getPercentageGC(){
 		return percentageGC;
 	};
-	
 	
 }
 

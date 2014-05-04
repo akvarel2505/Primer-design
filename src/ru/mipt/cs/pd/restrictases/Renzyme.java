@@ -1,4 +1,5 @@
 package ru.mipt.cs.pd.restrictases;
+
 import java.util.ArrayList;
 
 import ru.mipt.cs.pd.dna.ParentWithMainDNA;
@@ -85,14 +86,37 @@ public class Renzyme {
 
     }
     public String toString(){
-        String s = name + " (" + numOfPos + ')';
+        String s = name + " (" + numOfPos + ") " + place;
         return s;
 
     }
+
+    public int length(){
+        return place.length();
+    }
+
     public void print(){
-        System.out.println(name + " " + place);
         for (int i = 0; i < posPlaces.size(); ++i)
             System.out.print(posPlaces.get(i).getBegin() + " ");
         System.out.println();
     }
+    
+    //Nadia's code
+    public boolean check(int b, int e){
+    	boolean res=false;
+    	int br, er;
+    	
+    	int max=posPlaces.size();
+    	int i=0;
+    	
+    	while  ((i<max)&&(!res)){
+    		br=posPlaces.get(i).getBegin();
+    		er=posPlaces.get(i).getEnd();
+    		if ((br>b)&&(br<e)&&(er>b)&&(er<e)) res=true;
+    		i++;
+    	}
+    	
+    	return res;
+    }
+    
 }

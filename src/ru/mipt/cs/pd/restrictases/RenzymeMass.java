@@ -1,4 +1,5 @@
 package ru.mipt.cs.pd.restrictases;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class RenzymeMass{
     public static void seteSelectedFile(File eSelectedFile) {
         RenzymeMass.eSelectedFile = eSelectedFile;
     }
+    
     public RenzymeMass(){
         mainRenzymeStructure = new ArrayList<Renzyme>();
         try{
@@ -56,7 +58,6 @@ public class RenzymeMass{
     public ArrayList<Renzyme> getMainRenzymeStructure() {
        return mainRenzymeStructure;
    }
-    
     public RenzymeWithANumber[] findLeft(int pos){
         //Возвращает все рестриктазы, чье начало не правее pos
         ArrayList<Renzyme> left = new ArrayList<Renzyme>();
@@ -68,11 +69,9 @@ public class RenzymeMass{
         RenzymeWithANumber[] r = new RenzymeWithANumber[left.size()];
 
         for (int i = 0; i < left.size(); ++i){
-            r[i] = new RenzymeWithANumber(pos);
-            r[i].renzyme = left.get(i);
-            int k = 0;
-            ArrayList<SimpleExtract> posPlaces = r[i].renzyme.getPosPlaces();
+            r[i] = new RenzymeWithANumber(pos,left.get(i));
             int j;
+            ArrayList<SimpleExtract> posPlaces = r[i].getPosPlaces();
             for (j = 0; j < posPlaces.size(); ++j){
                 if (posPlaces.get(j).getBegin() <= pos)
                 {
@@ -100,8 +99,7 @@ public class RenzymeMass{
         }
         RenzymeWithANumber[] r = new RenzymeWithANumber[right.size()];
         for (int i = 0; i < right.size(); ++i){
-            r[i] = new RenzymeWithANumber(pos);
-            r[i].renzyme = right.get(i);
+            r[i] = new RenzymeWithANumber(pos,right.get(i));
             int k = 0;
             ArrayList<SimpleExtract> posPlaces = r[i].renzyme.getPosPlaces();
             int j;
@@ -123,9 +121,33 @@ public class RenzymeMass{
         Arrays.sort(r);
         return r;
     }
-    
-    
+
+    public RenzymeWithANumber[] findLeft(int begin, int end){
+        RenzymeWithANumber[] renzymeWithANumbers = findLeft(end);
+        int genomeLength = end - begin + 1;
+        for (int i = 0; i < renzymeWithANumbers.length; ++i){
+            renzymeWithANumbers[i].setGenomeLength(genomeLength);
+            if ((renzymeWithANumbers[i].number > genomeLength)&&((renzymeWithANumbers[i].number - renzymeWithANumbers[i].renzyme.length() + 1) <= genomeLength)){
+                renzymeWithANumbers[i].setIntersect(true);
+            }
+        }
+
+        return  renzymeWithANumbers;
+    }
+
+    public RenzymeWithANumber[] findRight(int begin, int end){
+        RenzymeWithANumber[] renzymeWithANumbers = findRight(begin);
+        int genomeLength = end - begin + 1;
+        for (int i = 0; i < renzymeWithANumbers.length; ++i){
+            renzymeWithANumbers[i].setGenomeLength(genomeLength);
+            if ((renzymeWithANumbers[i].number > genomeLength)&&((renzymeWithANumbers[i].number - renzymeWithANumbers[i].renzyme.length() + 1) <= genomeLength)){
+                renzymeWithANumbers[i].setIntersect(true);
+            }
+        }
+        return  renzymeWithANumbers;
+    }
     public int size(){
         return n;
     }
+
 }

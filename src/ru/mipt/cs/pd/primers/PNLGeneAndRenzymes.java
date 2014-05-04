@@ -19,10 +19,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
+import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.SimpleExtract;
 import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
-import ru.mipt.cs.pd.primers.alg.PressedBtnFindAutoPrimers;
-import ru.mipt.cs.pd.primers.alg.PressedBtnFindSecondPrimer;
 import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
 import ru.mipt.cs.pd.restrictases.RenzymeMass;
 import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
@@ -30,7 +29,7 @@ import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
 
 public class PNLGeneAndRenzymes extends JPanel{
 
-	private JButton btnFindAutoPrimers, btnFindSecondPrimer, btnBack; //bottomButtons
+	private JButton btnFindAutoPrimers, btnBack; //bottomButtons
 	private JButton selectAllR, deselectAllR, selectAllL, deselectAllL;
 	private JTextArea txtShowGene;
 	private JList<String> leftRenz, rightRenz;
@@ -50,173 +49,17 @@ public class PNLGeneAndRenzymes extends JPanel{
 		
 		//creating the buttons
 		btnFindAutoPrimers = new JButton(LabelsEN.btnFindAutoPrimers);
-		btnFindSecondPrimer = new JButton(LabelsEN.btnFindSecondPrimer);
 		btnBack = new JButton(LabelsEN.btnBack);
 		selectAllR = new JButton(LabelsEN.selectAll); 
 		deselectAllR = new JButton(LabelsEN.deselectAll);
 		selectAllL = new JButton(LabelsEN.selectAll);
 		deselectAllL = new JButton(LabelsEN.deselectAll);
 		
-		btnFindAutoPrimers.addActionListener(new PressedBtnFindAutoPrimers());
-		btnFindSecondPrimer.addActionListener(new PressedBtnFindSecondPrimer());	
-		
-		//
-		//Buttons for highlighting
-		//
-		
-		selectAllR.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				highlightAll(rightEnz);
-			}
-		});
-		
-		deselectAllR.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				dehighlightAll(rightEnz);
-			}
-		});
-		
-		selectAllL.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				highlightAll(leftEnz);
-			}
-		});
-		
-		deselectAllL.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				dehighlightAll(leftEnz);
-			}
-		});
-		
-		//Buttons for highlighting - end
-		//
-		
-		btnBack.addActionListener(new java.awt.event.ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				parentFrame.dispose();
-			}
-		});
-
-		
-		// work with the lists of restriction enzymes
-		
-		geneBegin=gene.getBegin();
-		geneEnd=gene.getEnd();
-		
-		leftEnz = new EnzymesWithInfo(restr.findLeft(geneBegin),true);
-		rightEnz = new EnzymesWithInfo(restr.findRight(gene.getEnd()),false);
-			 
-		selectedRight = new ArrayList<RenzymeWithANumber>();
-		selectedLeft = new ArrayList<RenzymeWithANumber>();
-		
-		txtShowGene=new JTextArea();		
-		txtShowGene.setEditable(false);
-		
-		String stringGene = gene.getMainDNA();
-		txtShowGene.setText(stringGene);
-		txtShowGene.setCaretPosition(0);
-		txtShowGene.setLineWrap(true);
-		brdGene = new TitledBorder(LabelsEN.dna53);
-		txtShowGene.setBorder(brdGene);
-		
-		
-		
-		// now add txtShowGene to a scroll pane
-		GeneScrollPane = new JScrollPane(txtShowGene);
-		GeneScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		GeneScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-		
-		//creating JLists with restriction enzymes
-		
-		///////////// left
-		
-		leftRenz = new JList<String>(leftEnz.forList);
-		leftRenz.setLayoutOrientation(JList.VERTICAL);
-		leftRenz.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		scrlLeft=new JScrollPane(leftRenz);
-		scrlLeft.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrlLeft.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		brdLeft = new TitledBorder(LabelsEN.brdRightEnz);
-		scrlLeft.setBorder(brdLeft);
-		
-		///////////// right
-		
-		rightRenz = new JList<String>(rightEnz.forList);
-		rightRenz.setLayoutOrientation(JList.VERTICAL);
-		rightRenz.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		scrlRight=new JScrollPane(rightRenz);
-		scrlRight.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrlRight.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);		
-		
-		brdRight = new TitledBorder(LabelsEN.brdRightEnz);
-		scrlRight.setBorder(brdRight);
-
-		
-		//MOUSE CLICKS on the JLists (followed by highlighting restriction sites in txtShowGene)
-		
-		leftRenz.addMouseListener(new java.awt.event.MouseListener(){
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-					
-					int indLeft=leftRenz.getSelectedIndex();
-					RenzymeWithANumber buf=leftEnz.array[indLeft];
-					
-					//System.out.println(buf.renzyme.getPlace());
-					
-					if (selectedLeft.contains(buf)) {
-						selectedLeft.remove(buf);
-						dehighlight(leftEnz,indLeft);
-					}
-					else {
-						selectedLeft.add(buf);
-						highlight(leftEnz,indLeft);
-					}
-					//TODO//////////////////////////////////////////
-					//какие-то дествия относительно подбора праймеров - добавить
-					// и то же самое для правых рестриктаз
-				}
-				public void mouseEntered(MouseEvent arg0) {}
-				public void mouseExited(MouseEvent arg0) {}
-				public void mousePressed(MouseEvent arg0) {}
-				public void mouseReleased(MouseEvent arg0) {}
-		});
-
-		rightRenz.addMouseListener(new java.awt.event.MouseListener(){
-					@Override
-					public void mouseClicked(MouseEvent arg0) {
-						
-						int indRight=rightRenz.getSelectedIndex();
-						RenzymeWithANumber buf=rightEnz.array[indRight];
-						
-						//System.out.println(buf.toString());
-						
-						if (selectedRight.contains(buf)) {
-							selectedRight.remove(buf);
-							dehighlight(rightEnz,indRight);
-						}
-						else {
-							selectedRight.add(buf);
-							highlight(rightEnz,indRight);
-						}
-						//TODO//////////////////////////////////////////
-						//какие-то дествия относительно подбора праймеров - добавить
-					}
-
-					public void mouseEntered(MouseEvent arg0) {}
-					public void mouseExited(MouseEvent arg0) {}
-					public void mousePressed(MouseEvent arg0) {}
-					public void mouseReleased(MouseEvent arg0) {}
-		});
-
-
-		// end: work with the lists of restriction enzymes
-		
+		makeButtonListeners();		
+		organiseRenzymesLists(gene, restr);		
+		mouseListenersOnRenzymes();
+				
 		// work with highlighted text in the Main Molecule
-		
 		txtShowGene.addMouseListener(new java.awt.event.MouseListener(){
 			public void mouseClicked(MouseEvent arg0) {}
 			public void mouseEntered(MouseEvent arg0) {}
@@ -239,99 +82,11 @@ public class PNLGeneAndRenzymes extends JPanel{
 			}
 		});
 
-		///
 		highlightGene();
 		highlightAll(leftEnz);
-		highlightAll(rightEnz);
+		highlightAll(rightEnz);				
 				
-				
-				
-		//DESIGN
-		
-		GroupLayout layout = new GroupLayout(this);
-		setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		
-		//creating horizontal group, ordinate axis is compressed	
-		
-		GroupLayout.SequentialGroup HORbottomButtons = layout.createSequentialGroup();
-		HORbottomButtons.addComponent(btnFindAutoPrimers);
-		HORbottomButtons.addComponent(btnFindSecondPrimer);
-		HORbottomButtons.addComponent(btnBack);
-		
-		//new buttons
-		GroupLayout.SequentialGroup selButtonsL = layout.createSequentialGroup();
-		selButtonsL.addComponent(selectAllL);
-		selButtonsL.addComponent(deselectAllL);
-				
-		GroupLayout.SequentialGroup selButtonsR = layout.createSequentialGroup();
-		selButtonsR.addComponent(selectAllR);
-		selButtonsR.addComponent(deselectAllR);
-		
-		GroupLayout.ParallelGroup listWithButL = layout.createParallelGroup();
-		listWithButL.addGroup(GroupLayout.Alignment.CENTER, selButtonsL);
-		listWithButL.addComponent(scrlLeft);
-				
-		GroupLayout.ParallelGroup listWithButR = layout.createParallelGroup();
-		listWithButR.addGroup(GroupLayout.Alignment.CENTER, selButtonsR);
-		listWithButR.addComponent(scrlRight);
-		
-		
-		GroupLayout.SequentialGroup lists = layout.createSequentialGroup();
-		lists.addGroup(listWithButL);
-		lists.addGroup(listWithButR);
-		//
-		
-		GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
-		HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, lists);
-		HORbigGroup.addComponent(GeneScrollPane, GroupLayout.Alignment.CENTER);
-		HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, HORbottomButtons);
-		
-		layout.setHorizontalGroup(HORbigGroup);
-	
-		
-		//creating vertical group, X axis is compressed	
-
-		//new buttons
-		GroupLayout.ParallelGroup VselButtonsL = layout.createParallelGroup();
-		VselButtonsL.addComponent(selectAllL);
-		VselButtonsL.addComponent(deselectAllL);
-		
-		GroupLayout.ParallelGroup VselButtonsR = layout.createParallelGroup();
-		VselButtonsR.addComponent(selectAllR);
-		VselButtonsR.addComponent(deselectAllR);
-				
-		GroupLayout.SequentialGroup VlistWithButL = layout.createSequentialGroup();
-		VlistWithButL.addGroup(VselButtonsL);
-		VlistWithButL.addComponent(scrlLeft);
-				
-		GroupLayout.SequentialGroup VlistWithButR = layout.createSequentialGroup();
-		VlistWithButR.addGroup(VselButtonsR);
-		VlistWithButR.addComponent(scrlRight);
-				
-				
-		GroupLayout.ParallelGroup listsV = layout.createParallelGroup();
-		listsV.addGroup(VlistWithButL);
-		listsV.addGroup(VlistWithButR);
-		//
-				
-
-		GroupLayout.ParallelGroup VERbottomButtons = layout.createParallelGroup();
-		VERbottomButtons.addComponent(btnFindAutoPrimers);
-		VERbottomButtons.addComponent(btnFindSecondPrimer);
-		VERbottomButtons.addComponent(btnBack);
-		
-		GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
-		VERbigGroup.addGroup(listsV);
-		VERbigGroup.addComponent(GeneScrollPane);
-		VERbigGroup.addGroup(VERbottomButtons);
-		
-		layout.setVerticalGroup(VERbigGroup);
-		
-		layout.linkSize(selectAllR, deselectAllR, selectAllL, deselectAllL);
-		layout.linkSize(btnFindAutoPrimers, btnFindSecondPrimer, btnBack);
+		makeDesign();		
 		setVisible(true);
 
 	}
@@ -368,7 +123,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 			//array with lengths 
 			for (i=0; i<size; i++){
 				lengths[i]=arr[i].renzyme.getPlace().length();
-				forList[i]=arr[i].toString();
+				String bbuf=arr[i].toString();
+				if (arr[i].renzyme.check(geneBegin,geneEnd)) forList[i]=bbuf+" !!!";
+				else forList[i]=bbuf;
 			}
 			
 			//begining in the main molecule
@@ -501,5 +258,254 @@ public class PNLGeneAndRenzymes extends JPanel{
 	
 	private void dehighlightGene(){
 		txtShowGene.getHighlighter().removeHighlight(geneTag);
+	}
+	
+	private void organiseRenzymesLists(SimpleExtract gene, RenzymeMass restr){
+		
+		geneBegin=gene.getBegin();
+		geneEnd=gene.getEnd();		
+		
+		leftEnz = new EnzymesWithInfo(restr.findLeft(geneBegin),true);
+		rightEnz = new EnzymesWithInfo(restr.findRight(geneEnd),false);
+			 
+		selectedRight = Environment.rightRenzymes;
+		selectedLeft = Environment.leftRenzymes;
+		
+		txtShowGene=new JTextArea();		
+		txtShowGene.setEditable(false);
+		
+		String stringGene = gene.getMainDNA();
+		txtShowGene.setText(stringGene);
+		txtShowGene.setCaretPosition(0);
+		txtShowGene.setLineWrap(true);
+		brdGene = new TitledBorder(LabelsEN.dna53);
+		txtShowGene.setBorder(brdGene);
+		
+		
+		// now add txtShowGene to a scroll pane
+		GeneScrollPane = new JScrollPane(txtShowGene);
+		GeneScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		GeneScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		//creating JLists with restriction enzymes
+		
+		///////////// left
+		
+		leftRenz = new JList<String>(leftEnz.forList);
+		leftRenz.setLayoutOrientation(JList.VERTICAL);
+		leftRenz.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		scrlLeft=new JScrollPane(leftRenz);
+		scrlLeft.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrlLeft.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		brdLeft = new TitledBorder(LabelsEN.brdLeftEnz);
+		scrlLeft.setBorder(brdLeft);
+		
+		///////////// right
+		
+		rightRenz = new JList<String>(rightEnz.forList);
+		rightRenz.setLayoutOrientation(JList.VERTICAL);
+		rightRenz.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		scrlRight=new JScrollPane(rightRenz);
+		scrlRight.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrlRight.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);		
+		
+		brdRight = new TitledBorder(LabelsEN.brdRightEnz);
+		scrlRight.setBorder(brdRight);
+
+	}
+	
+	private void makeButtonListeners(){
+		
+		btnFindAutoPrimers.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				
+			}
+		});
+		//
+		//Buttons for highlighting
+		//
+		
+		selectAllR.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				highlightAll(rightEnz);
+			}
+		});
+		
+		deselectAllR.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				dehighlightAll(rightEnz);
+			}
+		});
+		
+		selectAllL.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				highlightAll(leftEnz);
+			}
+		});
+		
+		deselectAllL.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				dehighlightAll(leftEnz);
+			}
+		});
+		
+		//Buttons for highlighting - end
+		//
+		
+		btnBack.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				parentFrame.dispose();
+			}
+		});
+
+	}
+	
+	private void mouseListenersOnRenzymes(){
+		//MOUSE CLICKS on the JLists (followed by highlighting restriction sites in txtShowGene)
+		
+				leftRenz.addMouseListener(new java.awt.event.MouseListener(){
+						@Override
+						public void mouseClicked(MouseEvent arg0) {
+							
+							int indLeft=leftRenz.getSelectedIndex();
+							RenzymeWithANumber buf=leftEnz.array[indLeft];
+							
+							//System.out.println(buf.renzyme.getPlace());
+							
+							if (selectedLeft.contains(buf)) {
+								selectedLeft.remove(buf);
+								dehighlight(leftEnz,indLeft);
+							}
+							else {
+								selectedLeft.add(buf);
+								highlight(leftEnz,indLeft);
+							}
+							//TODO//////////////////////////////////////////
+							//какие-то дествия относительно подбора праймеров - добавить
+							// и то же самое для правых рестриктаз
+						}
+						public void mouseEntered(MouseEvent arg0) {}
+						public void mouseExited(MouseEvent arg0) {}
+						public void mousePressed(MouseEvent arg0) {}
+						public void mouseReleased(MouseEvent arg0) {}
+				});
+
+				rightRenz.addMouseListener(new java.awt.event.MouseListener(){
+							@Override
+							public void mouseClicked(MouseEvent arg0) {
+								
+								int indRight=rightRenz.getSelectedIndex();
+								RenzymeWithANumber buf=rightEnz.array[indRight];
+								
+								//System.out.println(buf.toString());
+								
+								if (selectedRight.contains(buf)) {
+									selectedRight.remove(buf);
+									dehighlight(rightEnz,indRight);
+								}
+								else {
+									selectedRight.add(buf);
+									highlight(rightEnz,indRight);
+								}
+								//TODO//////////////////////////////////////////
+								//какие-то дествия относительно подбора праймеров - добавить
+							}
+
+							public void mouseEntered(MouseEvent arg0) {}
+							public void mouseExited(MouseEvent arg0) {}
+							public void mousePressed(MouseEvent arg0) {}
+							public void mouseReleased(MouseEvent arg0) {}
+				});
+
+
+				// end: work with the lists of restriction enzymes		
+	}
+	
+	private void makeDesign(){
+		//DESIGN
+				GroupLayout layout = new GroupLayout(this);
+				setLayout(layout);
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+				
+				//creating horizontal group, ordinate axis is compressed	
+				
+				GroupLayout.SequentialGroup HORbottomButtons = layout.createSequentialGroup();
+				HORbottomButtons.addComponent(btnFindAutoPrimers);
+				HORbottomButtons.addComponent(btnBack);
+				
+				//new buttons
+				GroupLayout.SequentialGroup selButtonsL = layout.createSequentialGroup();
+				selButtonsL.addComponent(selectAllL);
+				selButtonsL.addComponent(deselectAllL);
+						
+				GroupLayout.SequentialGroup selButtonsR = layout.createSequentialGroup();
+				selButtonsR.addComponent(selectAllR);
+				selButtonsR.addComponent(deselectAllR);
+				
+				GroupLayout.ParallelGroup listWithButL = layout.createParallelGroup();
+				listWithButL.addGroup(GroupLayout.Alignment.CENTER, selButtonsL);
+				listWithButL.addComponent(scrlLeft);
+						
+				GroupLayout.ParallelGroup listWithButR = layout.createParallelGroup();
+				listWithButR.addGroup(GroupLayout.Alignment.CENTER, selButtonsR);
+				listWithButR.addComponent(scrlRight);
+				
+				
+				GroupLayout.SequentialGroup lists = layout.createSequentialGroup();
+				lists.addGroup(listWithButL);
+				lists.addGroup(listWithButR);
+				//
+				
+				GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
+				HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, lists);
+				HORbigGroup.addComponent(GeneScrollPane, GroupLayout.Alignment.CENTER);
+				HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, HORbottomButtons);
+				
+				layout.setHorizontalGroup(HORbigGroup);
+			
+				
+				//creating vertical group, X axis is compressed	
+
+				//new buttons
+				GroupLayout.ParallelGroup VselButtonsL = layout.createParallelGroup();
+				VselButtonsL.addComponent(selectAllL);
+				VselButtonsL.addComponent(deselectAllL);
+				
+				GroupLayout.ParallelGroup VselButtonsR = layout.createParallelGroup();
+				VselButtonsR.addComponent(selectAllR);
+				VselButtonsR.addComponent(deselectAllR);
+						
+				GroupLayout.SequentialGroup VlistWithButL = layout.createSequentialGroup();
+				VlistWithButL.addGroup(VselButtonsL);
+				VlistWithButL.addComponent(scrlLeft);
+						
+				GroupLayout.SequentialGroup VlistWithButR = layout.createSequentialGroup();
+				VlistWithButR.addGroup(VselButtonsR);
+				VlistWithButR.addComponent(scrlRight);
+						
+						
+				GroupLayout.ParallelGroup listsV = layout.createParallelGroup();
+				listsV.addGroup(VlistWithButL);
+				listsV.addGroup(VlistWithButR);
+				//
+						
+				GroupLayout.ParallelGroup VERbottomButtons = layout.createParallelGroup();
+				VERbottomButtons.addComponent(btnFindAutoPrimers);
+				VERbottomButtons.addComponent(btnBack);
+				
+				GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
+				VERbigGroup.addGroup(listsV);
+				VERbigGroup.addComponent(GeneScrollPane);
+				VERbigGroup.addGroup(VERbottomButtons);
+				
+				layout.setVerticalGroup(VERbigGroup);
+				
+				layout.linkSize(selectAllR, deselectAllR, selectAllL, deselectAllL);
+				layout.linkSize(btnFindAutoPrimers, btnBack);
+
 	}
 }

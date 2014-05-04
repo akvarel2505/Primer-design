@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import ru.mipt.cs.pd.dna.AbstractDNA;
-import ru.mipt.cs.pd.dna.EnvironmentConstants;
+import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.primers.LabelsEN;
 import ru.mipt.cs.pd.utils.DNAStringUtils;
 
 public abstract class Primer extends AbstractDNA {
@@ -14,6 +15,14 @@ public abstract class Primer extends AbstractDNA {
 	
 	public abstract String toString();	
 	
+	public String toString(boolean b) {
+		int id=Environment.DNAs.indexOf(this);
+		float Tm=this.getTm();
+		float GC=this.getPercentageGC();
+		int length=this.getLength();
+		return String.format(LabelsEN.formatPrimer, id, Tm, length, GC);
+	}
+	
 	public FalseSite[] getFalseSites(){
 		FalseSite res[] = new FalseSite[falseSites.size()];  
 		falseSites.toArray(res);
@@ -21,11 +30,9 @@ public abstract class Primer extends AbstractDNA {
 	}
 	
 	public void findFalseSites(){
+		
 		String dna53 = theMainDNA;
-		
 		String dna35 = DNAStringUtils.comRev(theMainDNA);
-		
-		System.out.println(dna35);
 		
 		findSites(dna53, 35);
 		findSites(dna35, 53);
@@ -43,7 +50,7 @@ public abstract class Primer extends AbstractDNA {
 		String primer = this.toString();
 		int primerLength = getLength();
 		int mainLength = theMainDNA.length();
-		int min=EnvironmentConstants.minLength;
+		int min=Environment.minLength;
 		
 		int i,j,k,k0;
 		String currStr;
@@ -63,26 +70,30 @@ public abstract class Primer extends AbstractDNA {
 				while (k<mainLength){
 					
 					k0=theMainDNA.indexOf(currStr, k);
-					//System.out.println(k0);
 					if (k0==-1) k=mainLength; // doesn't match
 					else{
 						currSite = new FalseSite(k0,k0+j-i,i,j,strand);
-						if (!ifContained(currSite)) {
+						if (ifContained(currSite)) {
+							currSite.die();
+						}
+						else {
 							falseSites.add(currSite);
-							//if (strand==53){
-							//System.out.println(String.format("Find! i=%d j=%d k0=%d", i,j,k0));
-							System.out.println(String.format("gc=%.1f",currSite.getPercentageGC())+currSite.toString());
-							//System.out.println(currStr);
-							//}
 						}
 						k=k0+j-i-1;
 					}	
 				}
-				
 				j--;
 			}
 			i++;
-			j=primerLength;			//TODO - check
+			j=primerLength;
+		}
+		
+		if ((strand==35)&&(!falseSites.isEmpty())){
+			FalseSite res=falseSites.get(0);
+			if (res.toString().equalsIgnoreCase(this.toString())) {
+				res.die();
+				falseSites.remove(0);
+			}
 		}
 		
 	}
@@ -103,7 +114,6 @@ public abstract class Primer extends AbstractDNA {
 			res = ( ifIncluded(curr.getPrimerBeg(), curr.getPrimerEnd(), prB, prE) 
 			&& ((prB-curr.getPrimerBeg())==(mB-curr.getMainBeg())) );
 			i++;
-			
 		}
 		
 		return res;
@@ -113,5 +123,13 @@ public abstract class Primer extends AbstractDNA {
 		boolean res;
 		res=((e2<=e1)&&(b2>=b1));
 		return res;
+	}
+
+	public void die(){
+		int max=falseSites.size();
+		for (int i=0; i<max; i++){
+			falseSites.get(i).die();
+		}
+		Environment.DNAs.remove(this);
 	}
 }

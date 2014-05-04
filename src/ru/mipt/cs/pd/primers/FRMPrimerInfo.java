@@ -1,11 +1,21 @@
 package ru.mipt.cs.pd.primers;
 
-import javax.swing.*;
+import java.util.ArrayList;
 
-import ru.mipt.cs.pd.dna.EnvironmentConstants;
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
+
+import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.primers.FalseSite;
 import ru.mipt.cs.pd.dna.primers.Primer;
-import ru.mipt.cs.pd.references.FirstFrame;
 
 public class FRMPrimerInfo extends JFrame{
 	
@@ -13,14 +23,31 @@ public class FRMPrimerInfo extends JFrame{
 	private JList<String> listFalseSites;
 	private JScrollPane scrlFalseSites;
 	private PNLSolutionParameters envirInfo;
-	private JButton btnBack = new JButton("Back");
+	private JButton btnBack = new JButton(LabelsEN.back);
+	private JButton btnAccept = new JButton(LabelsEN.accept);
+	private JButton btnDiscard = new JButton(LabelsEN.discard);
+	private TitledBorder brdFalseSites = new TitledBorder(LabelsEN.brdFS);
+	private Primer primer;
+	private DefaultListModel listModel;
+	private ArrayList<Primer> parent;
 	
-	public FRMPrimerInfo(Primer currPrimer){
+	public FRMPrimerInfo(Primer currPrimer, DefaultListModel par, ArrayList<Primer> somePrimers){
+		
+
+		//Environment.prinAllDNAs();
+		
+		listModel=par;
+		parent=somePrimers;
+		primer=currPrimer;
 		
 		this.setTitle(LabelsEN.headPrimerInfo);
 		this.setSize(640, 480);
 		
-		lblPrimer = new JLabel("Here will be some information about primer");
+		//format of the information about primer
+		
+		String initial = makeInfoString(currPrimer);
+		
+		lblPrimer = new JLabel(String.format(initial, currPrimer.getTm(),currPrimer.getLength(), currPrimer.getPercentageGC()));
 		envirInfo = new PNLSolutionParameters(null);
 		envirInfo.disableEdit();
 		
@@ -31,6 +58,7 @@ public class FRMPrimerInfo extends JFrame{
 		scrlFalseSites=new JScrollPane(listFalseSites);
 		scrlFalseSites.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrlFalseSites.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrlFalseSites.setBorder(brdFalseSites);
 		
 		btnBack.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -38,44 +66,38 @@ public class FRMPrimerInfo extends JFrame{
 			}
 		});
 		
-		//DESIGN
+		btnAccept.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (parent.contains(primer)){
+					
+				}
+				else{
+					parent.add(primer);
+					String str=primer.toString(true);
+					listModel.addElement(str);
+					//Environment.prinAllDNAs();
+				}
+				dispose();
+			}
+		});
 		
-		GroupLayout layout = new GroupLayout(this.getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
+		btnDiscard.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if (parent.contains(primer)){
+					int ind=parent.indexOf(primer);
+					parent.remove(primer);
+					listModel.remove(ind);
+					primer.die();
+					//Environment.prinAllDNAs();
+				}
+				else{
+					primer.die();
+				}
+				dispose();
+			}
+		});
 		
-		
-		//creating horizontal group, ordinate axis is compressed	
-		
-		GroupLayout.SequentialGroup HOR = layout.createSequentialGroup();
-		HOR.addComponent(scrlFalseSites);
-		HOR.addComponent(envirInfo);
-		
-		GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
-		HORbigGroup.addComponent(lblPrimer, GroupLayout.Alignment.CENTER);
-		HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, HOR);
-		HORbigGroup.addComponent(btnBack, GroupLayout.Alignment.CENTER);
-		
-		layout.setHorizontalGroup(HORbigGroup);
-	
-		
-		//creating vertical group, X axis is compressed	
-
-		//new buttons
-		
-		GroupLayout.ParallelGroup VER = layout.createParallelGroup();
-		VER.addComponent(scrlFalseSites);
-		VER.addComponent(envirInfo);
-		//
-				
-		GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
-		VERbigGroup.addComponent(lblPrimer);
-		VERbigGroup.addGroup(VER);
-		VERbigGroup.addComponent(btnBack);
-		
-		layout.setVerticalGroup(VERbigGroup);
-		
+		makeDesign();		
 		setVisible(true);
 		
 	}
@@ -91,5 +113,114 @@ public class FRMPrimerInfo extends JFrame{
 		}
 		return res;
 	};
+	
+	private String makeInfoString(Primer currPrimer) {
+		
+		String res;
+		StringBuffer x=new StringBuffer();
+		x.append(currPrimer.toString());
+		
+		String bb=LabelsEN.accent;
+		String be=LabelsEN.accentEnd;
+		int lenBeg=bb.length();
+		int lenEnd=be.length();
+		
+		FalseSite arrFS[] = currPrimer.getFalseSites();
+		int max=arrFS.length;
+		
+		for (int i=0; i<max; i++){
+			
+			int  pos = arrFS[i].getPrimerEnd();
+			insert(x, pos, be,  arrFS, lenBeg, lenEnd);
+			
+			pos = arrFS[i].getPrimerBeg();
+			insert(x, pos, bb,  arrFS, lenBeg, lenEnd);
+			
+			checked.add(arrFS[i]);
+		}
+	
+		x.append(LabelsEN.lblMaskPrimerInfo);
+		x.insert(0,LabelsEN.html);
+		
+		res = x.toString();
+		return res;
+	}
+	
+	private void insert(StringBuffer x, int pos, String str,  FalseSite[] arrFS, int lenBeg, int lenEnd){
+		Pair pair=calculateBegsEnds(pos, arrFS);
+		pos += pair.b*lenBeg + pair.e*lenEnd;
+		x.insert(pos, str);
+	}
+	
+	private ArrayList<FalseSite> checked = new ArrayList<FalseSite>();
+	
+	private Pair calculateBegsEnds(int pos, FalseSite[] arrFS) {
+		int max=arrFS.length;
+		
+		Pair res=new Pair();
+		
+		for (int i=0; i<max; i++){
+			if (checked.contains(arrFS[i])){
+				if (arrFS[i].getPrimerEnd()<pos) res.e++;
+				if (arrFS[i].getPrimerBeg()<pos) res.b++;	
+			}
+		}
+		return res;
+	}
+
+	class Pair{
+		int b=0;
+		int e=0;
+	}
+	
+	private void makeDesign(){
+		//DESIGN
+		
+				GroupLayout layout = new GroupLayout(this.getContentPane());
+				getContentPane().setLayout(layout);
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+				
+				//creating horizontal group, ordinate axis is compressed	
+				
+				GroupLayout.SequentialGroup HOR = layout.createSequentialGroup();
+				HOR.addComponent(scrlFalseSites);
+				HOR.addComponent(envirInfo);
+				
+				GroupLayout.SequentialGroup bottomHor = layout.createSequentialGroup();
+				bottomHor.addComponent(btnAccept);
+				bottomHor.addComponent(btnDiscard);
+				bottomHor.addComponent(btnBack);
+				
+				GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
+				HORbigGroup.addComponent(lblPrimer, GroupLayout.Alignment.CENTER);
+				HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, HOR);
+				HORbigGroup.addGroup(GroupLayout.Alignment.CENTER, bottomHor);
+				
+				layout.setHorizontalGroup(HORbigGroup);
+			
+				
+				//creating vertical group, X axis is compressed	
+
+				
+				GroupLayout.ParallelGroup VER = layout.createParallelGroup();
+				VER.addComponent(scrlFalseSites);
+				VER.addComponent(envirInfo);
+				//
+				
+				GroupLayout.ParallelGroup bottomVer = layout.createParallelGroup();
+				bottomVer.addComponent(btnAccept);
+				bottomVer.addComponent(btnDiscard);
+				bottomVer.addComponent(btnBack);
+				
+				
+				GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
+				VERbigGroup.addComponent(lblPrimer);
+				VERbigGroup.addGroup(VER);
+				VERbigGroup.addGroup(bottomVer);
+				
+				layout.setVerticalGroup(VERbigGroup);
+
+	}
 	
 }

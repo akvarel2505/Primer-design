@@ -2,10 +2,13 @@ package ru.mipt.cs.pd.primers;
 
 import java.awt.Dimension;
 
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
@@ -29,10 +32,9 @@ public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
 	
 	private void initComponents(SimpleExtract gene, RenzymeMass restr){
 		
-		
 		geneAndRenzymes = new PNLGeneAndRenzymes(gene, restr, this);
 		
-		editedExtract = new PNLEditedExtract();
+		editedExtract = new PNLEditedExtract(this);
 		brdEdit = new TitledBorder(LabelsEN.editTitledBrd);
 		editedExtract.setBorder(brdEdit);
 		
@@ -47,47 +49,8 @@ public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); ///именно dispose, а не exit
 		setTitle(LabelsEN.primerTitle);
 
-		/*============================================*/
-		
-		
-		// DESIGN OF THE FRAME		
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		
-		
-		//creating horizontal group, ordinate axis is compressed	
-		
-		GroupLayout.SequentialGroup topGrp = layout.createSequentialGroup();
-		topGrp.addComponent(previousPrimers);
-		topGrp.addComponent(solutionParameters);
-		
-		GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
-		HORbigGroup.addGroup(topGrp);
-		HORbigGroup.addComponent(editedExtract);
-		HORbigGroup.addComponent(geneAndRenzymes, GroupLayout.Alignment.CENTER);
-	
-		
-		layout.setHorizontalGroup(HORbigGroup);
-	
-		
-		//creating vertical group, X axis is compressed	
-
-		GroupLayout.ParallelGroup VtopGrp = layout.createParallelGroup();
-		VtopGrp.addComponent(previousPrimers);
-		VtopGrp.addComponent(solutionParameters);
-		
-		GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
-		VERbigGroup.addGroup(VtopGrp);
-		VERbigGroup.addComponent(editedExtract);
-		VERbigGroup.addComponent(geneAndRenzymes);
-		
-		layout.setVerticalGroup(VERbigGroup);
-		
-		//finally
+		makeDesign();
 		setSize(new Dimension(900,600));
-		
 		setVisible(true);
 	}
 
@@ -111,7 +74,46 @@ public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
 		return editedExtract;
 	}
 
+	private void makeDesign(){
+		
+		// DESIGN OF THE FRAME		
+		GroupLayout layout = new GroupLayout(getContentPane());
+		getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
+		//creating horizontal group, ordinate axis is compressed	
+		
+		GroupLayout.SequentialGroup topGrp = layout.createSequentialGroup();
+		topGrp.addComponent(previousPrimers);
+		topGrp.addComponent(solutionParameters);
+		
+		GroupLayout.ParallelGroup HORbigGroup = layout.createParallelGroup();
+		HORbigGroup.addGroup(topGrp);
+		HORbigGroup.addComponent(editedExtract);
+		HORbigGroup.addComponent(geneAndRenzymes, GroupLayout.Alignment.CENTER);
+	
+		layout.setHorizontalGroup(HORbigGroup);
+		
+		//creating vertical group, X axis is compressed	
 
+		GroupLayout.ParallelGroup VtopGrp = layout.createParallelGroup();
+		VtopGrp.addComponent(previousPrimers);
+		VtopGrp.addComponent(solutionParameters);
+		
+		GroupLayout.SequentialGroup VERbigGroup = layout.createSequentialGroup();
+		VERbigGroup.addGroup(VtopGrp);
+		VERbigGroup.addComponent(editedExtract);
+		VERbigGroup.addComponent(geneAndRenzymes);
+		
+		layout.setVerticalGroup(VERbigGroup);
+		
+	}
+
+	@Override
+	public DefaultListModel getDefaultListModel() {
+		return previousPrimers.getDefaultListModel();
+	}
 	
 }
 

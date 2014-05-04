@@ -1,6 +1,6 @@
 package ru.mipt.cs.pd.dna.primers;
 
-import ru.mipt.cs.pd.dna.EnvironmentConstants;
+import ru.mipt.cs.pd.dna.Environment;
 
 public class HandMadePrimer extends Primer{
 	
@@ -10,8 +10,9 @@ public class HandMadePrimer extends Primer{
 		sequence=s;
 		calculateTm();
 		percentageGC();
-		ru.mipt.cs.pd.dna.EnvironmentConstants.DNAs.add(this);
-		if (getLength()>EnvironmentConstants.minLength) findFalseSites();
+		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
+		//if (getLength()>EnvironmentConstants.minLength) findFalseSites();
+		findFalseSites();
 	}
 	
 	public String toString(){

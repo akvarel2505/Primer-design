@@ -6,7 +6,6 @@ public abstract class ParentWithMainDNA {
 	
 	public void setMainDNA(String str){
 		theMainDNA=str;
-	
 	}
 	
 	public String getMainDNA(){
