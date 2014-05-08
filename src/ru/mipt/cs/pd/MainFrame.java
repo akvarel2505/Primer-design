@@ -183,6 +183,25 @@ public class MainFrame extends JFrame implements ActionListener{
 			}
 		});
 
+		public void highlightEnzymes(SimpleExtract[] array){
+			Highlighter h = txtMain.getHighlighter();
+		    h.removeAllHighlights();
+		    String text = txtMain.getText().toUpperCase();
+		    b = Feature.begin;
+		    e = Feature.end;
+		    
+
+		    for (int j = b; j < e; j += 1) {
+		      char ch = text.charAt(j);
+		        try {
+		          h.addHighlight(j, j + 1, DefaultHighlighter.DefaultPainter);
+		        } catch (BadLocationException ble) {
+		        }
+		  
+		  }
+		}
+
+
 		// DESIGN
 		GroupLayout layout = new GroupLayout(contentPane);
 		contentPane.setLayout(layout);
