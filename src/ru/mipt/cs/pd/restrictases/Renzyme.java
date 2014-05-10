@@ -2,7 +2,7 @@ package ru.mipt.cs.pd.restrictases;
 
 import java.util.ArrayList;
 
-import ru.mipt.cs.pd.dna.ParentWithMainDNA;
+import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.SimpleExtract;
 
 /**
@@ -49,7 +49,7 @@ public class Renzyme {
         return place;
     } public int getFirstPlace(){
         if (posPlaces.size() > 0) return posPlaces.get(0).getBegin();
-        return ParentWithMainDNA.getLengthOfMainDNA();
+        return Environment.getLengthOfMainDNA();
     }
     public ArrayList<SimpleExtract> getPosPlaces(){
         return posPlaces;
@@ -62,29 +62,7 @@ public class Renzyme {
         return 0;
     }
 
-    public static String inverse(String s){
-        char[] s1 = new char[s.length()];
-        for (int i = 0;i < s.length(); ++i){
-            switch (s.charAt(i)){
-                case 'a':
-                   s1[i] = 't';
-                   break;
-                case 't':
-                    s1[i] ='a';
-                    break;
-                case 'g':
-                    s1[i] = 'c';
-                    break;
-                case 'c':
-                    s1[i] = 'g';
-                    break;
-                default:
-                    Error e = new Error("Strange symbol!");
-            }
-        }
-        return new String(s1);
-
-    }
+    
     public String toString(){
         String s = name + " (" + numOfPos + ") " + place;
         return s;

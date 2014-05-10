@@ -1,6 +1,6 @@
 package ru.mipt.cs.pd.dna;
 
-public class SimpleExtract extends ParentWithMainDNA{
+public class SimpleExtract{
 	private int begin,end;
 	
 	public SimpleExtract(int b, int e){

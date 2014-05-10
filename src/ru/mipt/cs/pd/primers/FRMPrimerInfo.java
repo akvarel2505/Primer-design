@@ -13,9 +13,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
 
-import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.dna.primers.AutoPrimers;
 import ru.mipt.cs.pd.dna.primers.FalseSite;
 import ru.mipt.cs.pd.dna.primers.Primer;
+import ru.mipt.cs.pd.primers.interfaces.IntPNLPreviousPrimers;
 
 public class FRMPrimerInfo extends JFrame{
 	
@@ -29,15 +30,17 @@ public class FRMPrimerInfo extends JFrame{
 	private TitledBorder brdFalseSites = new TitledBorder(LabelsEN.brdFS);
 	private Primer primer;
 	private DefaultListModel listModel;
-	private ArrayList<Primer> parent;
+	private ArrayList<Primer> parentList;
+	private IntPNLPreviousPrimers parentFrame;
 	
-	public FRMPrimerInfo(Primer currPrimer, DefaultListModel par, ArrayList<Primer> somePrimers){
+	public FRMPrimerInfo(Primer currPrimer, DefaultListModel par, ArrayList<Primer> somePrimers, IntPNLPreviousPrimers parr){
 		
+		parentFrame=parr;
 
 		//Environment.prinAllDNAs();
 		
 		listModel=par;
-		parent=somePrimers;
+		parentList=somePrimers;
 		primer=currPrimer;
 		
 		this.setTitle(LabelsEN.headPrimerInfo);
@@ -68,14 +71,13 @@ public class FRMPrimerInfo extends JFrame{
 		
 		btnAccept.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				if (parent.contains(primer)){
+				if (parentList.contains(primer)){
 					
 				}
 				else{
-					parent.add(primer);
+					parentList.add(primer);
 					String str=primer.toString(true);
 					listModel.addElement(str);
-					//Environment.prinAllDNAs();
 				}
 				dispose();
 			}
@@ -83,16 +85,26 @@ public class FRMPrimerInfo extends JFrame{
 		
 		btnDiscard.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				if (parent.contains(primer)){
-					int ind=parent.indexOf(primer);
-					parent.remove(primer);
+				if (parentList.contains(primer)){
+					int ind=parentList.indexOf(primer);
+					parentList.remove(primer);
+					//System.out.println("removed from left-right list");
 					listModel.remove(ind);
-					primer.die();
+					//System.out.println("removed from visible list");
+					
+					try{
+					if (parentFrame.getListsOfAutoPrimers().left.contains(primer)){
+						parentFrame.getListsOfAutoPrimers().left.remove(primer);
+					}
+					if (parentFrame.getListsOfAutoPrimers().right.contains(primer)){
+						parentFrame.getListsOfAutoPrimers().right.remove(primer);
+					}
+					}
+					catch (NullPointerException e) {};
+					
+					}
 					//Environment.prinAllDNAs();
-				}
-				else{
-					primer.die();
-				}
+				primer.die();
 				dispose();
 			}
 		});
@@ -118,17 +130,24 @@ public class FRMPrimerInfo extends JFrame{
 		
 		String res;
 		StringBuffer x=new StringBuffer();
-		x.append(currPrimer.toString());
+		
+		res = currPrimer.toString();
+		if (currPrimer.ifRight()) x.append(ru.mipt.cs.pd.utils.DNAStringUtils.comRev(res));
+		else x.append(res);
 		
 		String bb=LabelsEN.accent;
 		String be=LabelsEN.accentEnd;
 		int lenBeg=bb.length();
 		int lenEnd=be.length();
 		
+		//FalseSite arrFS[] = revFalseSites(currPrimer.getFalseSites());
+		
 		FalseSite arrFS[] = currPrimer.getFalseSites();
 		int max=arrFS.length;
 		
 		for (int i=0; i<max; i++){
+			
+			if (currPrimer.ifRight()) revFalseSite(arrFS[i], currPrimer);
 			
 			int  pos = arrFS[i].getPrimerEnd();
 			insert(x, pos, be,  arrFS, lenBeg, lenEnd);
@@ -146,6 +165,15 @@ public class FRMPrimerInfo extends JFrame{
 		return res;
 	}
 	
+	
+	private void revFalseSite(FalseSite falseSite, Primer primer) {
+		int len = primer.getLength();
+		int oldB=falseSite.getPrimerBeg();
+		int oldE=falseSite.getPrimerEnd();
+		
+		falseSite.setPrimerLocation(len-oldE, len-oldB);
+	}
+
 	private void insert(StringBuffer x, int pos, String str,  FalseSite[] arrFS, int lenBeg, int lenEnd){
 		Pair pair=calculateBegsEnds(pos, arrFS);
 		pos += pair.b*lenBeg + pair.e*lenEnd;

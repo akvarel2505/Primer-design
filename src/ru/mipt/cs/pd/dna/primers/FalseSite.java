@@ -18,12 +18,14 @@ public class FalseSite extends AbstractDNA{
 		this.strand=strand;
 		calculateTm();
 		percentageGC();
-		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
+		synchronized (Environment.DNAs){
+			ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
+		}
 	}
 	
 	public String toString(){ //for calculations
-		if (strand==35) return theMainDNA.substring(mainBeg, mainEnd);
-		else return DNAStringUtils.comRev(theMainDNA).substring(mainBeg, mainEnd);
+		if (strand==35) return Environment.theMainDNA.substring(mainBeg, mainEnd);
+		else return DNAStringUtils.comRev(Environment.theMainDNA).substring(mainBeg, mainEnd);
 	}
 	
 	public String toString(boolean a){ //for frame
@@ -36,7 +38,9 @@ public class FalseSite extends AbstractDNA{
 	//calculateTm() - another method
 	
 	public void die(){
-		Environment.DNAs.remove(this);
+		synchronized (Environment.DNAs){
+			Environment.DNAs.remove(this);
+		}
 	}
 	
 	//getters
@@ -60,6 +64,11 @@ public class FalseSite extends AbstractDNA{
 
 	public int getPrimerEnd() {
 		return primerEnd;
+	}
+	
+	public void setPrimerLocation(int b, int e){
+		primerBeg=b;
+		primerEnd=e;
 	}
 
 }

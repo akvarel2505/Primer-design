@@ -2,10 +2,30 @@ package ru.mipt.cs.pd.dna;
 
 import java.util.ArrayList;
 
+import ru.mipt.cs.pd.dna.primers.AutoPrimers;
 import ru.mipt.cs.pd.dna.primers.Primer;
 import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
 
 public class Environment {
+	
+	// THE MAIN DNA
+	
+	public static String theMainDNA="";
+	
+	public static void setMainDNA(String str){
+		theMainDNA=str;
+	}
+	
+	public static String getMainDNA(){
+		return theMainDNA;
+	}
+	
+	public static int getLengthOfMainDNA(){
+		return theMainDNA.length();
+	}
+	
+	//
+	
 	public static float primerConc = 200; //nM
 	public static float saltConc = 50; //mM
 	public static float MgConc = 0;     //mM

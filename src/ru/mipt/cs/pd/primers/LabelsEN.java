@@ -37,8 +37,8 @@ public class LabelsEN {
 	//FRMPrimerINFO
 	public static final String frmtInfoFalseSite = "  Tm=%.1f, GC=%.1f, mainDNA(%d): %d...%d";
 	public static final String headPrimerInfo = "Information about primer";
-	public static final String html = "<html>";
-	public static final String lblMaskPrimerInfo = "<br>"+formatInfoAboutEdited+"</html>";
+	public static final String html = "<html>5'<br>";
+	public static final String lblMaskPrimerInfo = "     3'<br>"+formatInfoAboutEdited+"</html>";
 	public static final String accept = "Accept";
 	public static final String discard = "Discard";
 	public static final String back = "Back";

@@ -14,6 +14,7 @@ public abstract class Primer extends AbstractDNA {
 	protected ArrayList<FalseSite> falseSites = new ArrayList<FalseSite>();
 	
 	public abstract String toString();	
+	public abstract boolean ifRight();
 	
 	public String toString(boolean b) {
 		int id=Environment.DNAs.indexOf(this);
@@ -31,8 +32,8 @@ public abstract class Primer extends AbstractDNA {
 	
 	public void findFalseSites(){
 		
-		String dna53 = theMainDNA;
-		String dna35 = DNAStringUtils.comRev(theMainDNA);
+		String dna53 = Environment.theMainDNA;
+		String dna35 = DNAStringUtils.comRev(Environment.theMainDNA);
 		
 		findSites(dna53, 35);
 		findSites(dna35, 53);
@@ -130,6 +131,8 @@ public abstract class Primer extends AbstractDNA {
 		for (int i=0; i<max; i++){
 			falseSites.get(i).die();
 		}
-		Environment.DNAs.remove(this);
+		synchronized (Environment.DNAs){
+			Environment.DNAs.remove(this);
+		}
 	}
 }

@@ -8,24 +8,23 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.border.TitledBorder;
 
 import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.dna.primers.AutoPrimers;
 import ru.mipt.cs.pd.dna.primers.Primer;
+import ru.mipt.cs.pd.primers.interfaces.IntPNLPreviousPrimers;
 
-public class PNLPreviousPrimers extends JPanel{
+public class PNLPreviousPrimers extends JPanel implements IntPNLPreviousPrimers{
 	
 	private JList<String> listLeftPrimers, listRightPrimers;
 	private TitledBorder brdLeft, brdRight;
 	private JScrollPane scrlLeft, scrlRight;
-	private DefaultListModel left, right;
+	private DefaultListModel<String> left, right;
 	private ArrayList<Primer> leftPrimers=Environment.leftPrimers;
 	private ArrayList<Primer> rightPrimers=Environment.rightPrimers;
-	//private ArrayList<RenzymeWithANumber> leftRenzymes = Environment.leftRenzymes; 
-	//private ArrayList<RenzymeWithANumber> rightRenzymes = Environment.rightRenzymes;
-	 
-	
+	private AutoPrimers autoRes;
+	private IntPNLPreviousPrimers self=this;
 	public PNLPreviousPrimers(){
 		
 		GridLayout layout = new GridLayout();
@@ -46,8 +45,8 @@ public class PNLPreviousPrimers extends JPanel{
 		listLeftPrimers.addMouseListener(new java.awt.event.MouseListener(){
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				int ind = ((JList)(arg0.getSource())).getSelectedIndex();
-				FRMPrimerInfo x = new FRMPrimerInfo(leftPrimers.get(ind), left, Environment.leftPrimers);
+				int ind = ((JList<String>)(arg0.getSource())).getSelectedIndex();
+				new FRMPrimerInfo(leftPrimers.get(ind), left, Environment.leftPrimers, self);
 			}
 			public void mouseEntered(MouseEvent arg0) {}
 			public void mouseExited(MouseEvent arg0) {}
@@ -59,7 +58,7 @@ public class PNLPreviousPrimers extends JPanel{
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int ind = ((JList)(arg0.getSource())).getSelectedIndex();
-				FRMPrimerInfo x = new FRMPrimerInfo(rightPrimers.get(ind), right, Environment.leftPrimers);
+				new FRMPrimerInfo(rightPrimers.get(ind), right, Environment.rightPrimers, self);
 			}
 			public void mouseEntered(MouseEvent arg0) {}
 			public void mouseExited(MouseEvent arg0) {}
@@ -81,14 +80,14 @@ public class PNLPreviousPrimers extends JPanel{
 	
 	private void organiseLists(){
 		
-		left = new DefaultListModel();
+		left = new DefaultListModel<String>();
 		listLeftPrimers = new JList<String>(makeList(leftPrimers));
 		brdLeft=new TitledBorder(LabelsEN.brdLeftPrimers);
 		scrlLeft=new JScrollPane(listLeftPrimers);
 		scrlLeft.setBorder(brdLeft);
 		listLeftPrimers.setModel(left);
 		
-		right = new DefaultListModel();
+		right = new DefaultListModel<String>();
 		listRightPrimers = new JList<String>(makeList(rightPrimers));
 		brdRight=new TitledBorder(LabelsEN.brdRightPrimers);
 		scrlRight=new JScrollPane(listRightPrimers);
@@ -97,8 +96,72 @@ public class PNLPreviousPrimers extends JPanel{
 		
 	}
 
-	public DefaultListModel getDefaultListModel() {
+	public DefaultListModel<String> getDefaultListModel() {
 		return left;
+	}
+
+	
+	public void showPrimers(AutoPrimers res) {
+		
+		autoRes=res;
+		
+		int max = res.left.size();
+		int i;
+		String str;
+		for (i=0; i<max; i++){
+			str = res.left.get(i).toString(true);
+			left.addElement(str);
+			Environment.leftPrimers.add(res.left.get(i));
+		}
+		max = res.right.size();
+		for (i=0; i<max; i++){
+			str = res.right.get(i).toString(true);
+			right.addElement(str);
+			Environment.rightPrimers.add(res.right.get(i));
+		}
+	}
+	
+	public void clearAllAuto(){
+		int ind;
+		Primer curr;
+		try{
+		while (!autoRes.left.isEmpty()) {
+			curr = autoRes.left.remove(0);
+			ind = Environment.leftPrimers.indexOf(curr);
+			Environment.leftPrimers.remove(ind);
+			left.remove(ind);
+			curr.die();
+		}
+		while (!autoRes.right.isEmpty()) {
+			curr = autoRes.right.remove(0);
+			ind = Environment.rightPrimers.indexOf(curr);
+			Environment.rightPrimers.remove(ind);
+			right.remove(ind);
+			curr.die();
+		}
+		}
+		catch (NullPointerException e) {}
+	}
+	
+	public void clearAll(){
+		clearAllAuto();
+		clearArray(Environment.DNAs);
+		clearArray(Environment.leftPrimers);
+		clearArray(Environment.rightPrimers);
+		left.clear();
+		right.clear();
+	}
+	
+	private void clearArray(ArrayList ar){
+		int max=ar.size();
+		for (int i=max; i>0; i--){
+			ar.remove(i-1); 
+		}
+	}
+
+	@Override
+	public AutoPrimers getListsOfAutoPrimers() {
+		return autoRes;
 	}
 
 }

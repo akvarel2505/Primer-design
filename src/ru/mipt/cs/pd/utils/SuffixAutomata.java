@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ru.mipt.cs.pd.dna.ParentWithMainDNA;
+import ru.mipt.cs.pd.dna.Environment;
 
 
 /**
@@ -16,7 +16,7 @@ import ru.mipt.cs.pd.dna.ParentWithMainDNA;
     * Поиск количества подстрок строки t в DNA s.numOfOccurrences(t);
     * Поиск первых символов вхождений t в DNA s.getOccurrences(t).
     */
-public class SuffixAutomata extends ParentWithMainDNA {
+public class SuffixAutomata{
     final static int alphabetSize = 4;
     private State[] states;
     private int[] s;
@@ -99,7 +99,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
     }
 
     public SuffixAutomata(){
-        s = stringToNum(theMainDNA);
+        s = stringToNum(Environment.theMainDNA);
         build();
     }
     private void extend(int character){
@@ -167,7 +167,7 @@ public class SuffixAutomata extends ParentWithMainDNA {
         }
     }
 
-    private int[] stringToNum(String t){
+    private int[] stringToNum(final String t){
         int[] arrayOfInt = new int[t.length()];
         for (int i = 0; i < t.length(); ++i){
             switch (t.charAt(i)){

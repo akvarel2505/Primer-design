@@ -7,16 +7,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import ru.mipt.cs.pd.dna.Environment;
-import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
+import ru.mipt.cs.pd.primers.interfaces.IntFRMSimplePrimers;
 
 public class PNLSolutionParameters extends JPanel{
 	
 	private JLabel lblPrimerConc, lblSaltConc, lblMgConc, lblTm;
 	private JButton btnApply;
 	private JTextField txtPrimerConc, txtSaltConc, txtMgConc, txtTm;
-	private intFRMSimplePrimers frmParent;
+	private IntFRMSimplePrimers frmParent;
 	
-	public PNLSolutionParameters(intFRMSimplePrimers parent){
+	public PNLSolutionParameters(IntFRMSimplePrimers parent){
 		
 		lblPrimerConc = new JLabel(LabelsEN.lblPrimerConc);
 		lblSaltConc = new JLabel(LabelsEN.lblSaltConc);

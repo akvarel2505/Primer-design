@@ -1,29 +1,37 @@
 package ru.mipt.cs.pd.dna.primers;
 
-import ru.mipt.cs.pd.dna.AbstractDNA;
 import ru.mipt.cs.pd.dna.Environment;
 
 public class AutoPrimer extends Primer{
 
 	protected int beg,end;
+	protected boolean ifRight;
 	
-	public AutoPrimer(int b, int e){
+	public AutoPrimer(int b, int e, boolean ifR){
 		beg=b;
 		end=e;
+		ifRight=ifR;
 		calculateTm();
 		percentageGC();
-		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
+		synchronized (Environment.DNAs){
+			ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
+		}
 		findFalseSites();
 	}
 	
 	public String toString(){
-		String res=theMainDNA.substring(beg,end);
+		String res=Environment.theMainDNA.substring(beg,end);
 		return res;
 	}
 
 	@Override
 	public int getLength() {
-		return beg-end;
+		return end-beg;
+	}
+
+	@Override
+	public boolean ifRight() {
+		return ifRight;
 	}
 	
 	

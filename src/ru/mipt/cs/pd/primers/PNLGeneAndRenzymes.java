@@ -21,8 +21,10 @@ import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
 import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.SimpleExtract;
+import ru.mipt.cs.pd.dna.primers.AutoPrimers;
+import ru.mipt.cs.pd.dna.primers.AutoPrimersAlg;
 import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
-import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
+import ru.mipt.cs.pd.primers.interfaces.IntFRMSimplePrimers;
 import ru.mipt.cs.pd.restrictases.RenzymeMass;
 import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
 
@@ -41,9 +43,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 	private Object geneTag;
 	private EnzymesWithInfo leftEnz, rightEnz;
 
-	private intFRMSimplePrimers parentFrame;
+	private IntFRMSimplePrimers parentFrame;
 	
-	public PNLGeneAndRenzymes(SimpleExtract gene, RenzymeMass restr, intFRMSimplePrimers parent){
+	public PNLGeneAndRenzymes(SimpleExtract gene, RenzymeMass restr, IntFRMSimplePrimers parent){
 		
 		parentFrame=parent;
 		
@@ -274,7 +276,7 @@ public class PNLGeneAndRenzymes extends JPanel{
 		txtShowGene=new JTextArea();		
 		txtShowGene.setEditable(false);
 		
-		String stringGene = gene.getMainDNA();
+		String stringGene = Environment.getMainDNA();
 		txtShowGene.setText(stringGene);
 		txtShowGene.setCaretPosition(0);
 		txtShowGene.setLineWrap(true);
@@ -321,7 +323,10 @@ public class PNLGeneAndRenzymes extends JPanel{
 		
 		btnFindAutoPrimers.addActionListener(new java.awt.event.ActionListener(){
 			public void actionPerformed(ActionEvent evt) {
-				
+				parentFrame.clearAutoPrimers();
+				AutoPrimersAlg primerChooser = new AutoPrimersAlg(geneBegin, geneEnd, selectedLeft, selectedRight);
+				AutoPrimers res = primerChooser.getResult();
+				parentFrame.showPrimers(res);
 			}
 		});
 		//
@@ -357,6 +362,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 		
 		btnBack.addActionListener(new java.awt.event.ActionListener(){
 			public void actionPerformed(ActionEvent evt) {
+				parentFrame.clearAll();
+				Environment.leftRenzymes.clear();
+				Environment.rightRenzymes.clear();
 				parentFrame.dispose();
 			}
 		});
@@ -383,9 +391,7 @@ public class PNLGeneAndRenzymes extends JPanel{
 								selectedLeft.add(buf);
 								highlight(leftEnz,indLeft);
 							}
-							//TODO//////////////////////////////////////////
-							//какие-то дествия относительно подбора праймеров - добавить
-							// и то же самое для правых рестриктаз
+							
 						}
 						public void mouseEntered(MouseEvent arg0) {}
 						public void mouseExited(MouseEvent arg0) {}
@@ -410,8 +416,7 @@ public class PNLGeneAndRenzymes extends JPanel{
 									selectedRight.add(buf);
 									highlight(rightEnz,indRight);
 								}
-								//TODO//////////////////////////////////////////
-								//какие-то дествия относительно подбора праймеров - добавить
+								
 							}
 
 							public void mouseEntered(MouseEvent arg0) {}

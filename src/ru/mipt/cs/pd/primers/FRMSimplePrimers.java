@@ -6,17 +6,16 @@ import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
 import ru.mipt.cs.pd.dna.SimpleExtract;
-import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
+import ru.mipt.cs.pd.dna.primers.AutoPrimers;
+import ru.mipt.cs.pd.primers.interfaces.IntFRMSimplePrimers;
 import ru.mipt.cs.pd.restrictases.RenzymeMass;
 
-public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
+public class FRMSimplePrimers extends JFrame implements IntFRMSimplePrimers{
 	
 	private TitledBorder brgLblPrimer, brdEdit, brdSol;
 	
@@ -113,6 +112,21 @@ public class FRMSimplePrimers extends JFrame implements intFRMSimplePrimers{
 	@Override
 	public DefaultListModel getDefaultListModel() {
 		return previousPrimers.getDefaultListModel();
+	}
+
+	@Override
+	public void showPrimers(AutoPrimers res) {
+		previousPrimers.showPrimers(res);
+	}
+
+	@Override
+	public void clearAutoPrimers() {
+		previousPrimers.clearAllAuto();
+	}
+
+	@Override
+	public void clearAll() {
+		previousPrimers.clearAll();		
 	}
 	
 }

@@ -11,7 +11,6 @@ public class HandMadePrimer extends Primer{
 		calculateTm();
 		percentageGC();
 		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
-		//if (getLength()>EnvironmentConstants.minLength) findFalseSites();
 		findFalseSites();
 	}
 	
@@ -21,5 +20,10 @@ public class HandMadePrimer extends Primer{
 
 	public int getLength() {
 		return sequence.trim().length();
+	}
+
+	@Override
+	public boolean ifRight() {
+		return false;
 	}
 }

@@ -12,18 +12,18 @@ import javax.swing.SwingConstants;
 import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.primers.HandMadePrimer;
 import ru.mipt.cs.pd.dna.primers.Primer;
-import ru.mipt.cs.pd.primers.interfaces.intFRMSimplePrimers;
-import ru.mipt.cs.pd.primers.interfaces.intPnlEditedExtract;
-import ru.mipt.cs.pd.references.FirstFrame;
+import ru.mipt.cs.pd.primers.interfaces.IntFRMSimplePrimers;
+import ru.mipt.cs.pd.primers.interfaces.IntPNLEditedExtract;
+import ru.mipt.cs.pd.references.AminoAcidFrame;
 
-public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
+public class PNLEditedExtract extends JPanel implements IntPNLEditedExtract{
 	
 	private JButton btnAnalyseFalseSites, btnReference;  //twoBut
 	private JTextField txtEditPrimer;
 	private JLabel infoAboutEdited;
 	private Primer primer;
 	private HandMadePrimer currentlyEdited;
-	private intFRMSimplePrimers parent;
+	private IntFRMSimplePrimers parent;
 	
 	public Primer getPrimer() {
 		return primer;
@@ -33,7 +33,7 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 		primer=x;
 	}
 	
-	public PNLEditedExtract(intFRMSimplePrimers x){
+	public PNLEditedExtract(IntFRMSimplePrimers x){
 		
 		parent=x;
 		txtEditPrimer=new JTextField(LabelsEN.initHandPrimer);
@@ -48,7 +48,7 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 					else{
 						Environment.DNAs.add(primer);
 					}
-					FRMPrimerInfo x = new FRMPrimerInfo(primer, parent.getDefaultListModel(), Environment.leftPrimers);
+					FRMPrimerInfo x = new FRMPrimerInfo(primer, parent.getDefaultListModel(), Environment.leftPrimers, null);
 				}
 				catch (NullPointerException e){}
 			}
@@ -57,7 +57,7 @@ public class PNLEditedExtract extends JPanel implements intPnlEditedExtract{
 		btnReference = new JButton(LabelsEN.reference);
 		btnReference.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				FirstFrame x=new FirstFrame();
+				AminoAcidFrame x=new AminoAcidFrame();
 			}
 		});
 		
