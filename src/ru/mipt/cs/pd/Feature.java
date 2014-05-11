@@ -1,13 +1,31 @@
+package ru.mipt.cs.pd.dna;
+
 public class Feature extends SimpleExtract{
 
 	private String typeF, nameF;
-	int begin, end;
+	private int begin, end;
 	Object tag;
 	
-	public void type(String type){
+	public String getType() {
+		return typeF;
+	}
+	public String getName() {
+		return nameF;
+	}
+	public int getBegin() {
+		return begin;
+	}
+	public int getEnd() {
+		return end;
+	}
+	public Object getTag() {
+		return tag;
+	}
+	
+	public void setType(String type){
 		typeF = type;
 	}
-	public void location(int b, int e){
+	public void setLocation(int b, int e){
 		begin = b;
 		end = e;
 	}
@@ -22,3 +40,4 @@ public class Feature extends SimpleExtract{
 		return stringObject;
 	}
 }
+
