@@ -1,3 +1,4 @@
+package ru.mipt.cs.pd.io;
 import java.awt.Dimension;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -6,21 +7,29 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
+
+import ru.mipt.cs.pd.MainFrame;
+import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.dna.Feature;
+
 
 
 public class InputFile extends MainFrame{
 	
-	// The types of features
-	protected String  CDS = "CDS", gene = "gene", miscFeature = "misc_feature", misc_binding = "misc_binding";
-	protected String type[] = {CDS, gene, miscFeature, misc_binding};
-	protected int number = 0;   //number of features
-	public static String zy;
+	static ArrayList<Feature> feature = new ArrayList<Feature>();
 	
-	public void OpenFile(String format, String name){
-		if (format == "raw"){
+	// The types of features
+	protected static String  CDS = " CDS ", gene = " gene ", miscFeature = " misc_feature ", misc_binding = " misc_binding ";
+	protected static String type[] = {CDS, gene, miscFeature, misc_binding};
+	protected static int number = 0;   //number of features
+	public static String zy=Environment.theMainDNA;
+	
+	public static void OpenFile(String format, String path, JTextArea txtMain){
+		if (format.equals("raw")){
 			zy = "";
     		try {
-    			FileInputStream fileStream = new FileInputStream(name);
+    			FileInputStream fileStream = new FileInputStream(path);
     			Scanner scanner = new Scanner(fileStream);
     			while (scanner.hasNextLine()) {
     				String line = scanner.nextLine();
@@ -34,10 +43,10 @@ public class InputFile extends MainFrame{
     			e.printStackTrace();
     		}
 		}
-		else if (format == "fasta"){
+		else if (format.equals("fasta")){
 			String zy = "";
     		try {
-    			FileInputStream fileStream = new FileInputStream(name);
+    			FileInputStream fileStream = new FileInputStream(path);
     			Scanner scanner = new Scanner(fileStream);
     			String line = scanner.nextLine();
     			while (scanner.hasNextLine()) {
@@ -52,43 +61,53 @@ public class InputFile extends MainFrame{
     			e.printStackTrace();
     		}
 		}
-		else if (format == "genbank"){
+		else if (format.equals("seq")){
 			String zy = "";
-			int i = 0, b = 0, b1, e = 0, e1;
+			int i = 0, j = 0, b = 0, b1, e = 0, e1;
 			
-			ArrayList<Feature> feature = new ArrayList<Feature>();
 			Feature buf;
-			for (i = 0; i<4; i++){
+			for (i = 0; i<4; i++){                                     //i - порядковый номер названия feature
     		try {
-    			FileInputStream fileStream = new FileInputStream(name);
+    			FileInputStream fileStream = new FileInputStream(path);
     			Scanner scanner = new Scanner(fileStream);
     			while (scanner.hasNextLine()) {
     				String line = scanner.nextLine();
     				if (line.indexOf(type[i]) != -1){
     					buf = new Feature();
-    					buf.type(type[i]);
-    					while(!line.matches("^\\D*$")){
+    					buf.setType(type[i]);
+    					/*while(!line.matches("^\\D*$")){
     						b1 = b*10;
-    						b = line.charAt(i);
+    						b = line.charAt(j); //
     						b = b1 + b;
-    						i++;
-    					}
-    					while(!line.matches("^\\D*$")){
+    						j++;
+    						
+    					}*/
+    					String[] parts = line.split("\\.\\.");
+    					System.out.println(line);
+    					e = Integer.parseInt(parts[1]);
+    					String[] parts2 = parts[0].split(type[i]);
+    					
+    					String[] resBeg = parts2[parts2.length-1].split("\\W");
+    					b = Integer.parseInt(resBeg[resBeg.length-1]);
+    					System.out.println(b);
+    					System.out.println(e);
+    					
+    					/*while(!line.matches("^\\D*$")){
     						e1 = e*10;
-    						e = line.charAt(i);   //важно, что здесь начинается с установеленного в предыдущем цикле i
+    						e = line.charAt(j);   //важно, что здесь начинается с установеленного в предыдущем цикле j
     						e = e1 + e;
-    						i++;
-    					}
-    					buf.location(b, e);
+    						j++;
+    					}*/
+    					buf.setLocation(b, e);
     					while (scanner.hasNextLine()) {
     	    				line = scanner.nextLine();
     	    				if (line.indexOf("/label") != -1){
-    	    					i = line.indexOf("/label");
-    	    					name = line.substring(i+8);
-    	    					buf.name(name);
+    	    					j = line.indexOf("/label");
+    	    					String strName = line.substring(j+8);
+    	    					buf.name(strName);
     	    				}
     					}
-    					feature.add(buf);
+    					feature.add(buf);      //?
     				}
     			}
     			scanner.close();
@@ -98,21 +117,22 @@ public class InputFile extends MainFrame{
 			}
     		/////////////////////////////////////
     		try {
-    			FileInputStream fileStream = new FileInputStream(name);
+    			FileInputStream fileStream = new FileInputStream(path);
     			Scanner scanner = new Scanner(fileStream);
     			while (scanner.hasNextLine()) {
     				String line = scanner.nextLine();
     				if (line.indexOf("ORIGIN") != -1){
     					while (scanner.hasNextLine()) {
     	    				line = scanner.nextLine();
-    	    				for (i = 0; i < line.length(); i++){ //TODO
-    	    					if ((line.charAt(i) == 'a')|| (line.charAt(i) == 'c')){
-    	    						zy = zy + line.charAt(i);
+    	    				for (i = 0; i < line.length(); i++){ 
+    	    					String symbol = String.valueOf(line.charAt(i));
+    	    					if ((symbol.equals("a")) || (symbol.equals("c")) || (symbol.equals("g")) || (symbol.equals("t"))){
+    	    						zy = zy + symbol;
     	    					}
     	    				}
     					}
     				}
-    			System.out.println(line);
+    			System.out.println(line);  //TODO    			
     			System.out.println(zy);
     			System.out.println();
     			}
@@ -121,6 +141,9 @@ public class InputFile extends MainFrame{
     			ee.printStackTrace();
     		}
     		/////////////////////////////////////
+    		txtMain.setText(zy);
+    		Environment.setMainDNA(zy);
+    	
 		}
 		else{
 			 createGUI();
@@ -142,12 +165,6 @@ public class InputFile extends MainFrame{
         
         frame.pack();
         frame.setVisible(true);          
-   
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-             public void run() {
-                  createGUI();
-             }
-        });
    }
 
 
