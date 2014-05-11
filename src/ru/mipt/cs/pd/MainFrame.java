@@ -20,6 +20,18 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+
+import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.dna.SimpleExtract;
+import ru.mipt.cs.pd.io.InputFile;
+import ru.mipt.cs.pd.io.SaveFile;
+import ru.mipt.cs.pd.primers.FRMSimplePrimers;
+import ru.mipt.cs.pd.restrictases.EnzymeSelector;
+import ru.mipt.cs.pd.restrictases.RenzymeMass;
 
 public class MainFrame extends JFrame implements ActionListener{
 
@@ -28,7 +40,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private JButton btnPrimers;
 	private JButton btnRestrictaza;
 	private JButton btnCertificate;
-	private JTextArea txtMain;
+	protected JTextArea txtMain;
 	private JScrollPane scrlMain;
 	private JFileChooser fc;
 	private MainFrame Self=this;
@@ -70,17 +82,12 @@ public class MainFrame extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Master of primers");
 
-		btnPrimers.setText("Подобрать праймеры");
-		btnPrimers.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				// btnPrimersActionPerformed(evt);
-			}
-		});
+		btnPrimers.setText("Primers");
 
-		btnRestrictaza.setText("Подобрать рестриктазу");
+		btnRestrictaza.setText("Restriction enzymes");
 		btnRestrictaza.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				// btnRestrictazaActionPerformed(evt);
+				EnzymeSelector e = new EnzymeSelector();
 			}
 		});
 		btnCertificate.setText("Открыть справку");
@@ -100,7 +107,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
 		
 
-		txtMain = new JTextArea(InputFile.zy);
+		txtMain = new JTextArea(InputFile.zy);          //TODO
 		txtMain.setLineWrap(true);
 
 		scrlMain = new JScrollPane(txtMain);
@@ -140,17 +147,37 @@ public class MainFrame extends JFrame implements ActionListener{
 		cbMenuItem = new JCheckBoxMenuItem("Сохранить изменения");
 		cbMenuItem.setMnemonic(KeyEvent.VK_H);
 		menu.add(cbMenuItem);
+		cbMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				SaveFile.createFile(txtMain.getText());
+				
+			}
+			
+		});
 
 		// Build second menu "Edition"
-		menu = new JMenu("Редактировать");
+		menu = new JMenu("Редактирование");
 		menu.setMnemonic(KeyEvent.VK_N);
+		JMenuItem menuItem = null;
+        menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
+        menuItem.setText("Вырезать");
+        menuItem.setMnemonic(KeyEvent.VK_T);
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+        menuItem.setText("Копировать");
+        menuItem.setMnemonic(KeyEvent.VK_C);
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+        menuItem.setText("Вставить");
+        menuItem.setMnemonic(KeyEvent.VK_P);
+        menu.add(menuItem);
+
 		menuBar.add(menu);
-		
-		
 		this.setJMenuBar(menuBar);
-		// ///////////////////////////////////
+		// ///////////////////////////////////	
 		
-		//////////////////////
 		// describing open and save buttons
 		final String newline = "\n";
 
@@ -159,13 +186,11 @@ public class MainFrame extends JFrame implements ActionListener{
 		contentPane.add(btnPrimers);
 		contentPane.add(scrlMain);
 
-		TheMainDNAMolecule zyyy = new TheMainDNAMolecule(txtMain.getText());
-
-		// обработка нажатия на кнопку. Вообще хорошо бы этот класс сделать
-		// нормальным, а не анонимным
 		btnPrimers.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 
+				Environment.setMainDNA(txtMain.getText());
+				
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						int i, j;
@@ -175,32 +200,14 @@ public class MainFrame extends JFrame implements ActionListener{
 
 						RenzymeMass restrictionEnzymesNearGene = new RenzymeMass();
 
-						FRMSimplePrimers x = new FRMSimplePrimers(passed,
-								restrictionEnzymesNearGene); 
+						FRMSimplePrimers x = new FRMSimplePrimers(passed, restrictionEnzymesNearGene); 
 					}
 				});
 
 			}
 		});
-
-		public void highlightEnzymes(SimpleExtract[] array){
-			Highlighter h = txtMain.getHighlighter();
-		    h.removeAllHighlights();
-		    String text = txtMain.getText().toUpperCase();
-		    b = Feature.begin;
-		    e = Feature.end;
-		    
-
-		    for (int j = b; j < e; j += 1) {
-		      char ch = text.charAt(j);
-		        try {
-		          h.addHighlight(j, j + 1, DefaultHighlighter.DefaultPainter);
-		        } catch (BadLocationException ble) {
-		        }
-		  
-		  }
-		}
-
+		
+		
 
 		// DESIGN
 		GroupLayout layout = new GroupLayout(contentPane);
@@ -238,6 +245,7 @@ public class MainFrame extends JFrame implements ActionListener{
                 File file = fc.getSelectedFile();
                 //This is where a real application would open the file.
                 String name = file.getName();
+                String path = file.getPath();
             	String format="";
             	int i = 0, k;
             	while (i < name.length()){
@@ -247,15 +255,25 @@ public class MainFrame extends JFrame implements ActionListener{
             		}
             		i++;
             	}
-            	System.out.println(format);
-            
-        //Handle save button action.
-       // } else if (e.getSource() == menuItemSave) {
-         //   int returnVal = fc.showSaveDialog(MainFrame.this);
-            
-            
-            }
+            	System.out.println(name);              // TODO убрать
+            	System.out.println(path);              // TODO убрать
+            	System.out.println(format);              // TODO убрать
+            	InputFile.OpenFile(format, path, txtMain);            }
             }
         }
-	}    
-
+	
+	public void highlightEnzymes(SimpleExtract[] array){
+		Highlighter h = txtMain.getHighlighter();
+	    h.removeAllHighlights();
+	    int len=array.length;
+	    SimpleExtract buf;
+	    for (int j = 0; j<len; j += 1) {
+	        buf = array[j];
+	    	try {
+	          h.addHighlight(buf.getBegin(), buf.getEnd(), DefaultHighlighter.DefaultPainter);
+	        } catch (BadLocationException exc) {
+	        }
+	  }
+	}
+	
+	} 
