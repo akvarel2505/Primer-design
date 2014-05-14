@@ -1,5 +1,6 @@
 package ru.mipt.cs.pd.primers;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -425,7 +426,6 @@ public class PNLGeneAndRenzymes extends JPanel{
 							public void mouseReleased(MouseEvent arg0) {}
 				});
 
-
 				// end: work with the lists of restriction enzymes		
 	}
 	
@@ -508,6 +508,10 @@ public class PNLGeneAndRenzymes extends JPanel{
 				VERbigGroup.addGroup(VERbottomButtons);
 				
 				layout.setVerticalGroup(VERbigGroup);
+				
+				scrlRight.setMinimumSize(new Dimension(25, 75));
+				scrlLeft.setMinimumSize(new Dimension(25, 75));	
+				GeneScrollPane.setMinimumSize(new Dimension(25, 35));
 				
 				layout.linkSize(selectAllR, deselectAllR, selectAllL, deselectAllL);
 				layout.linkSize(btnFindAutoPrimers, btnBack);

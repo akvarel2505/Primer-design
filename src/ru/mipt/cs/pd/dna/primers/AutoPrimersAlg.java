@@ -1,6 +1,8 @@
 package ru.mipt.cs.pd.dna.primers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.restrictases.RenzymeWithANumber;
@@ -41,10 +43,49 @@ public class AutoPrimersAlg{
 		makeThreads(leftEnz, result.left);
 		makeThreads(rightEnz, result.right);
 		
-		//sort primers
-		//TODO
+		//sort
+		Comparator compPrimersTm = new Comparator<Primer>(){
+			public int compare(Primer o1, Primer o2) {
+				float desTm = Environment.desiredTm;
+				float p1 = Math.abs(o1.getTm()*100-desTm*100);
+				float p2 = Math.abs(o2.getTm()*100-desTm*100);
+				return (int)(p1)-(int)(p2);
+			}
+		};
+		Collections.sort(result.left,  compPrimersTm);
+		Collections.sort(result.right,  compPrimersTm);
+		
+		cutDown(result.left, 10);
+		cutDown(result.right, 10);
+		
+		Comparator compPrimersFalseSites = new Comparator<Primer>(){
+			public int compare(Primer o1, Primer o2) {
+				int p1 = o1.getFalseSites().length;
+				int p2 = o2.getFalseSites().length;
+				return (p1-p2);
+			}
+		};
+		
+		Collections.sort(result.left,  compPrimersFalseSites);
+		Collections.sort(result.right, compPrimersFalseSites);
+		
+		cutDown(result.left, 5);
+		cutDown(result.right, 5);
 		
 		return result;
+	}
+
+	private void cutDown(ArrayList<AutoPrimer> array, int num) {
+		
+		int max=array.size() - 1;
+		int extra = max+1 - num;
+		Primer buf;
+		for (int i=0; i<extra; i++){
+			buf = array.remove(max);
+			buf.die();
+			max--;
+		}
+		
 	}
 
 	private void makeThreads(ArrayList<Enzyme> enzymes, ArrayList<AutoPrimer> res){
@@ -77,6 +118,8 @@ public class AutoPrimersAlg{
 		}
 		
 	}
+	
+	
 
 	private ArrayList<Enzyme> changeRight(ArrayList<RenzymeWithANumber> renz){
 		ArrayList<Enzyme> res = new ArrayList<Enzyme>();

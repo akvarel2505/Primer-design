@@ -7,6 +7,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
@@ -50,6 +51,7 @@ public class FRMSimplePrimers extends JFrame implements IntFRMSimplePrimers{
 
 		makeDesign();
 		setSize(new Dimension(900,600));
+		this.setExtendedState(MAXIMIZED_BOTH);
 		setVisible(true);
 	}
 
@@ -106,6 +108,7 @@ public class FRMSimplePrimers extends JFrame implements IntFRMSimplePrimers{
 		VERbigGroup.addComponent(geneAndRenzymes);
 		
 		layout.setVerticalGroup(VERbigGroup);
+		layout.linkSize(SwingConstants.VERTICAL, previousPrimers, solutionParameters);
 		
 	}
 
