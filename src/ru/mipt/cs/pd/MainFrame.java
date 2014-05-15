@@ -1,5 +1,6 @@
 package ru.mipt.cs.pd;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,8 +25,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.dna.Feature;
 import ru.mipt.cs.pd.dna.SimpleExtract;
 import ru.mipt.cs.pd.io.InputFile;
 import ru.mipt.cs.pd.io.SaveFile;
@@ -50,7 +54,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
 	JMenuBar menuBar;
 	JMenu menu, submenu;
-	JMenuItem menuItemOpen, menuItemNew, menuItemSave;
+	JMenuItem menuItemOpen, menuItemNew, menuItemSave, menuItemFeature;
 	JRadioButtonMenuItem rbMenuItem;
 	JCheckBoxMenuItem cbMenuItem;
 
@@ -125,32 +129,30 @@ public class MainFrame extends JFrame implements ActionListener{
 		menu.setMnemonic(KeyEvent.VK_A);
 		menuBar.add(menu);
 
-		// a group of JMenuItems
 		menuItemOpen = new JMenuItem("Открыть файл", KeyEvent.VK_T);
-		menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-				ActionEvent.ALT_MASK));
+		menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+				ActionEvent.CTRL_MASK));
 		menu.add(menuItemOpen);
 		menuItemOpen.addActionListener(new ActionListener(){
-
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Self.actionPerformed(arg0);
-				
 			}
-			
 		});
 
 		menuItemNew = new JMenuItem("Создать новый");
 		menuItemNew.setMnemonic(KeyEvent.VK_B);
+		menuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+				ActionEvent.CTRL_MASK));
 		menu.add(menuItemNew);
 
-		cbMenuItem = new JCheckBoxMenuItem("Сохранить изменения");
-		cbMenuItem.setMnemonic(KeyEvent.VK_H);
-		menu.add(cbMenuItem);
-		cbMenuItem.addActionListener(new ActionListener(){
+		menuItemSave = new JMenuItem("Сохранить изменения");
+		menuItemSave.setMnemonic(KeyEvent.VK_H);
+		menuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				ActionEvent.CTRL_MASK));
+		menu.add(menuItemSave);
+		menuItemSave.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				SaveFile.createFile(txtMain.getText());
-				
 			}
 			
 		});
@@ -159,19 +161,38 @@ public class MainFrame extends JFrame implements ActionListener{
 		menu = new JMenu("Редактирование");
 		menu.setMnemonic(KeyEvent.VK_N);
 		JMenuItem menuItem = null;
+		
+		menuItemFeature = new JMenuItem("Создать новую Feature");
+		menuItemFeature.setMnemonic(KeyEvent.VK_Z);
+		menuItemFeature.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+				ActionEvent.CTRL_MASK));
+		menu.add(menuItemFeature);
+		menuItemFeature.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg1) {
+				
+			}
+			
+		});
+		
         menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
         menuItem.setText("Вырезать");
         menuItem.setMnemonic(KeyEvent.VK_T);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+				ActionEvent.CTRL_MASK));
         menu.add(menuItem);
 
         menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
         menuItem.setText("Копировать");
         menuItem.setMnemonic(KeyEvent.VK_C);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				ActionEvent.CTRL_MASK));
         menu.add(menuItem);
 
         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
         menuItem.setText("Вставить");
         menuItem.setMnemonic(KeyEvent.VK_P);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+				ActionEvent.CTRL_MASK));
         menu.add(menuItem);
 
 		menuBar.add(menu);
@@ -255,19 +276,40 @@ public class MainFrame extends JFrame implements ActionListener{
             		}
             		i++;
             	}
-            	System.out.println(name);              // TODO убрать
-            	System.out.println(path);              // TODO убрать
-            	System.out.println(format);              // TODO убрать
-            	InputFile.OpenFile(format, path, txtMain);            }
+            	InputFile.OpenFile(format, path, txtMain);
+            	highlightFeatures();
+            	}
             }
         }
-	
+	public void highlightFeatures(){
+		Highlighter h = txtMain.getHighlighter();
+		DefaultHighlightPainter painters[] = new DefaultHighlighter.DefaultHighlightPainter[5];
+		initColors(painters);
+		h.removeAllHighlights();
+	    int numberOfFeatures = InputFile.feature.size();
+	    for (int j = 0; j < numberOfFeatures; j += 1) {
+	    	Feature buf = InputFile.feature.get(j);
+	    	try {
+	          h.addHighlight(buf.getBegin(), buf.getEnd(), painters[buf.getType(true)]);
+	        } catch (BadLocationException exc) {
+	        }
+	  }
+	}
+	private void initColors(DefaultHighlightPainter[] painters) {
+		painters[0] = new DefaultHighlighter.DefaultHighlightPainter(Color.gray);
+		painters[1] = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+		painters[2] = new DefaultHighlighter.DefaultHighlightPainter(Color.green);
+		painters[3] = new DefaultHighlighter.DefaultHighlightPainter(Color.orange);
+		painters[4] = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+	}
+
+
 	public void highlightEnzymes(SimpleExtract[] array){
 		Highlighter h = txtMain.getHighlighter();
 	    h.removeAllHighlights();
 	    int len=array.length;
 	    SimpleExtract buf;
-	    for (int j = 0; j<len; j += 1) {
+	    for (int j = 0; j < len; j += 1) {
 	        buf = array[j];
 	    	try {
 	          h.addHighlight(buf.getBegin(), buf.getEnd(), DefaultHighlighter.DefaultPainter);
@@ -276,4 +318,4 @@ public class MainFrame extends JFrame implements ActionListener{
 	  }
 	}
 	
-	} 
+	}    
