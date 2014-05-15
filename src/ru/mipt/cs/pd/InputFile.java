@@ -14,10 +14,9 @@ import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.Feature;
 
 
-
 public class InputFile extends MainFrame{
 	
-	static ArrayList<Feature> feature = new ArrayList<Feature>();
+	public static ArrayList<Feature> feature = new ArrayList<Feature>();
 	
 	// The types of features
 	protected static String  CDS = " CDS ", gene = " gene ", miscFeature = " misc_feature ", misc_binding = " misc_binding ";
@@ -70,44 +69,31 @@ public class InputFile extends MainFrame{
     		try {
     			FileInputStream fileStream = new FileInputStream(path);
     			Scanner scanner = new Scanner(fileStream);
+    			Scanner auxScan;
     			while (scanner.hasNextLine()) {
     				String line = scanner.nextLine();
     				if (line.indexOf(type[i]) != -1){
     					buf = new Feature();
     					buf.setType(type[i]);
-    					/*while(!line.matches("^\\D*$")){
-    						b1 = b*10;
-    						b = line.charAt(j); //
-    						b = b1 + b;
-    						j++;
-    						
-    					}*/
+    					System.out.println(buf.getType());
     					String[] parts = line.split("\\.\\.");
-    					System.out.println(line);
-    					e = Integer.parseInt(parts[1]);
+    					auxScan = new Scanner(parts[1]);
+    					e = auxScan.nextInt();
     					String[] parts2 = parts[0].split(type[i]);
-    					
     					String[] resBeg = parts2[parts2.length-1].split("\\W");
-    					b = Integer.parseInt(resBeg[resBeg.length-1]);
-    					System.out.println(b);
-    					System.out.println(e);
-    					
-    					/*while(!line.matches("^\\D*$")){
-    						e1 = e*10;
-    						e = line.charAt(j);   //важно, что здесь начинается с установеленного в предыдущем цикле j
-    						e = e1 + e;
-    						j++;
-    					}*/
+    					auxScan = new Scanner(resBeg[resBeg.length-1]);
+    					b = auxScan.nextInt();
     					buf.setLocation(b, e);
     					while (scanner.hasNextLine()) {
     	    				line = scanner.nextLine();
     	    				if (line.indexOf("/label") != -1){
     	    					j = line.indexOf("/label");
-    	    					String strName = line.substring(j+8);
+    	    					String strName = line.substring(j+7);
     	    					buf.name(strName);
+    	    					System.out.println(buf.getName());
     	    				}
     					}
-    					feature.add(buf);      //?
+    					feature.add(buf); 
     				}
     			}
     			scanner.close();
@@ -132,9 +118,9 @@ public class InputFile extends MainFrame{
     	    				}
     					}
     				}
-    			System.out.println(line);  //TODO    			
-    			System.out.println(zy);
-    			System.out.println();
+    			//System.out.println(line);  //TODO    			
+    			//System.out.println(zy);
+    			//System.out.println();
     			}
     			scanner.close();
     		} catch (FileNotFoundException ee) {
@@ -169,3 +155,4 @@ public class InputFile extends MainFrame{
 
 
 }
+
