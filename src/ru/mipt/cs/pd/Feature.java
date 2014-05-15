@@ -9,6 +9,15 @@ public class Feature extends SimpleExtract{
 	public String getType() {
 		return typeF;
 	}
+	
+	public int getType(boolean ifForColor) {
+		if (getType().equals(" CDS ")) return 1;
+		if (getType().equals(" gene ")) return 2;
+		if (getType().equals(" miscFeature ")) return 3;
+		if (getType().equals(" misc_binding ")) return 4;
+		return 0; 
+	}
+	
 	public String getName() {
 		return nameF;
 	}
@@ -40,4 +49,3 @@ public class Feature extends SimpleExtract{
 		return stringObject;
 	}
 }
-
