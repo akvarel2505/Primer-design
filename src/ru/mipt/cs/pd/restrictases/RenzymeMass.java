@@ -1,8 +1,6 @@
 package ru.mipt.cs.pd.restrictases;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -17,38 +15,99 @@ import ru.mipt.cs.pd.utils.SuffixAutomata;
 public class RenzymeMass{
     protected ArrayList<Renzyme> mainRenzymeStructure;
     private int n = 0;
-    static File eSelectedFile = new File("rFiles/example1.txt");
+
+    static File eSelectedFile = new File("rFiles/bigenzymes.txt");
     static SuffixAutomata suffixAutomata = new SuffixAutomata();
+
+    public static void setDefaultFile() {
+        String nameOfDefaultFile = eSelectedFile.getAbsolutePath();
+        try {
+            PrintStream printStream = new PrintStream(fileName);
+            printStream.println(nameOfDefaultFile);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    static String fileName = "rFiles/default.txt";
+    static boolean fileChoosen = false;
 
     public static File geteSelectedFile() {
         return eSelectedFile;
     }
     public static void seteSelectedFile(File eSelectedFile) {
         RenzymeMass.eSelectedFile = eSelectedFile;
+        fileChoosen = true;
     }
-    
+
     public RenzymeMass(){
+
+        if (!fileChoosen){
+            try{
+                FileReader fileReader = new FileReader(fileName);
+                Scanner scanner = new Scanner(fileReader);
+                if (scanner.hasNextLine()) {
+                    eSelectedFile = new File(scanner.nextLine());
+                } else {
+                    eSelectedFile = null;
+                }
+                fileReader.close();
+                scanner.close();
+
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
         mainRenzymeStructure = new ArrayList<Renzyme>();
         try{
-            FileReader fileReader = new FileReader(eSelectedFile);
-            Scanner scanner = new Scanner(fileReader);
-            n = 0;
-            while (scanner.hasNext()){
-                    n++;
-                    String name = scanner.next();
-                    String place = scanner.next();
-                      if (place.toString() != ""){
-                        Renzyme renzyme = new Renzyme(name,place);
-                        mainRenzymeStructure.add(renzyme);
-                    } else {
-                          System.out.println(name + " is empty ");
+            try {
+                try{
+                FileReader fileReader = new FileReader(eSelectedFile);
+                Scanner scanner = new Scanner(fileReader);
+                n = 0;
+                while (scanner.hasNext()){
+                        n++;
+                        String name = scanner.next();
+                    if (scanner.hasNext()){
+                        String place = scanner.next();
+                          if (place.toString() != ""){
+                            Renzyme renzyme = new Renzyme(name,place);
+                            mainRenzymeStructure.add(renzyme);
+                        } else {
+                             // System.out.println(name + " is empty ");
+                        }
                     }
-            }
-            fileReader.close();
-            scanner.close();
+                }
+                fileReader.close();
+                scanner.close();
+                }
+                catch (NullPointerException e){
+
+                }
+                }
+                catch (FileNotFoundException e){
+
+                }
 
         } catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    public void addRenzyme(String name,String place){
+        Renzyme renzyme = new Renzyme(name,place);
+        mainRenzymeStructure.add(renzyme);
+    }
+
+    public void deleteRenzyme(String name){
+        int n = mainRenzymeStructure.size();
+        for (int i = 0; i < n; ++i){
+            if (mainRenzymeStructure.get(i).getName() == name){
+                mainRenzymeStructure.remove(i);
+                break;
+            }
         }
     }
 
@@ -146,8 +205,13 @@ public class RenzymeMass{
         }
         return  renzymeWithANumbers;
     }
+
     public int size(){
         return n;
+    }
+    
+    public static void updateSuffixAutomata(){
+    	suffixAutomata = new SuffixAutomata();
     }
 
 }

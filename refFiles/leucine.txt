@@ -1,0 +1,9 @@
+Leu, L
+
+Molecular 
+formula		C6H13NO2
+
+Molar mass	131.17 g mol-1
+
+Acidity (pKa)	2.36 (carboxyl), 
+		9.60 (amino)

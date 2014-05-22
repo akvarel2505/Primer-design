@@ -1,5 +1,6 @@
 package ru.mipt.cs.pd.primers;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -9,10 +10,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
 import ru.mipt.cs.pd.dna.Environment;
 import ru.mipt.cs.pd.dna.primers.AutoPrimers;
 import ru.mipt.cs.pd.dna.primers.Primer;
+import ru.mipt.cs.pd.primers.interfaces.IntFRMSimplePrimers;
 import ru.mipt.cs.pd.primers.interfaces.IntPNLPreviousPrimers;
 
 public class PNLPreviousPrimers extends JPanel implements IntPNLPreviousPrimers{
@@ -25,7 +30,11 @@ public class PNLPreviousPrimers extends JPanel implements IntPNLPreviousPrimers{
 	private ArrayList<Primer> rightPrimers=Environment.rightPrimers;
 	private AutoPrimers autoRes;
 	private IntPNLPreviousPrimers self=this;
-	public PNLPreviousPrimers(){
+	private IntFRMSimplePrimers parent;
+	
+	public PNLPreviousPrimers(IntFRMSimplePrimers par){
+		
+		parent = par;
 		
 		GridLayout layout = new GridLayout();
 		setLayout(layout);
@@ -162,6 +171,23 @@ public class PNLPreviousPrimers extends JPanel implements IntPNLPreviousPrimers{
 	@Override
 	public AutoPrimers getListsOfAutoPrimers() {
 		return autoRes;
+	}
+
+	@Override
+	public Object highlightPrimer(int b, int e) {
+		DefaultHighlightPainter yellowPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+		Object tag=null;
+		//highlight primer
+		try{
+			tag = parent.getTxtShowGene().getHighlighter().addHighlight(b, e, yellowPainter);
+		}
+		catch (BadLocationException ee) {}
+		return tag;
+	}
+
+	@Override
+	public void dehighlightPrimer(Object tag) {
+		parent.getTxtShowGene().getHighlighter().removeHighlight(tag);
 	}
 
 }

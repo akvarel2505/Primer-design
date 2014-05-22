@@ -1,0 +1,17 @@
+Gly, G
+
+Formula: C2H5NO2
+
+Molar mass:	75.07 g mol-1
+
+Appearance:	white solid
+
+Density:	1.607 g/cm3
+
+Melting point:	233 C (decomposition)
+
+Solubility 
+in water:	24.99 g/100 mL (25 C)
+Solubility:  soluble in ethanol, 
+	     pyridine
+	     insoluble in ether

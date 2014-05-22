@@ -1,0 +1,21 @@
+Arg, R
+
+Molecular 
+formula		C6H14N4O2
+
+Molar mass	174.20 g mol-1
+
+Appearance	White crystals
+
+Odor		Odourless
+
+Melting point	260 C
+
+Boiling point	368 C 
+
+Solubility 	14.87 g/100 mL 
+in water	(20 C)
+
+Solubility	slightly soluble 
+		in ethanol
+insoluble in ethyl ether

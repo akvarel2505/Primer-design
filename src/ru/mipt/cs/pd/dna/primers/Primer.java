@@ -15,7 +15,14 @@ public abstract class Primer extends AbstractDNA {
 	
 	public abstract String toString();	
 	public abstract boolean ifRight();
+	protected int beg,end;
 	
+	public int getBeg() {
+		return beg;
+	}
+	public int getEnd() {
+		return end;
+	}
 	public String toString(boolean b) {
 		int id=Environment.DNAs.indexOf(this);
 		float Tm=this.getTm();
@@ -40,7 +47,7 @@ public abstract class Primer extends AbstractDNA {
 		
 		Collections.sort(falseSites, new Comparator<FalseSite>() {
 			public int compare(FalseSite o1, FalseSite o2) {
-				return (int)(o2.getTm() - o1.getTm());
+				return (int)(o2.getTm()*100 - o1.getTm()*100);
 			}
 		});
 		

@@ -4,8 +4,7 @@ import ru.mipt.cs.pd.dna.Environment;
 
 public class AutoPrimer extends Primer{
 
-	protected int beg,end;
-	protected boolean ifRight;
+	private boolean ifRight;
 	
 	public AutoPrimer(int b, int e, boolean ifR){
 		beg=b;

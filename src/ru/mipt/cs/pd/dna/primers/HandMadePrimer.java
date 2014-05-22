@@ -1,18 +1,29 @@
 package ru.mipt.cs.pd.dna.primers;
 
-import ru.mipt.cs.pd.dna.Environment;
-
 public class HandMadePrimer extends Primer{
 	
 	private String sequence;
 	
 	public HandMadePrimer(String s){
+		builder(s);
+		beg = 0;
+		end = 0;
+	}
+	
+	public HandMadePrimer(int b, int e, String s){
+		builder(s);
+		beg = b;
+		end = e;
+	}
+	
+	private void builder(String s){
 		sequence=s;
 		calculateTm();
 		percentageGC();
 		ru.mipt.cs.pd.dna.Environment.DNAs.add(this);
 		findFalseSites();
 	}
+
 	
 	public String toString(){
 		return sequence;

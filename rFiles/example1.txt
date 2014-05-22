@@ -1,9 +1,0 @@
-EcoRI gaattc
-BamHI ggatcc
-HindIII aagctt
-TaqI tcga
-SmaI cccggg
-HaeIII ggcc
-EcoRV gatatc
-PstI ctgcag
-

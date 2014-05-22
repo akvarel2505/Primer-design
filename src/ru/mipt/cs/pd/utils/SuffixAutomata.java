@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.mipt.cs.pd.dna.Environment;
+import ru.mipt.cs.pd.restrictases.EnzymeSelector;
 
 
 /**
@@ -22,6 +23,11 @@ public class SuffixAutomata{
     private int[] s;
     private int last;
     private int size;
+    private boolean warningForEnzymeSelector = false;
+    public boolean getWarning(){
+        return warningForEnzymeSelector;
+    }
+
     class State{
         private int len;
         private int firstpos;
@@ -51,7 +57,6 @@ public class SuffixAutomata{
                return next[character];
             }
             catch (ArrayIndexOutOfBoundsException e){
-                System.out.println("Wrong string in suffix automata");
                 e.printStackTrace();
                 return -1;
             }

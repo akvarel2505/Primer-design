@@ -13,7 +13,15 @@
 
     <target name="compile" depends="clean">
         <mkdir dir="${build.classes}"/>
-        <javac srcdir="${src.dir}" destdir="${build.classes}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes}">
+ 	<classpath location="../lib/commons-codec-1.6.jar"/>
+	<classpath location="../lib/commons-logging-1.1.3.jar"/>
+	<classpath location="../lib/fluent-hc-4.3.3.jar"/>
+	<classpath location="../lib/httpclient-4.3.3.jar"/>
+	<classpath location="../lib/httpclient-cache-4.3.3"/>
+	<classpath location="../lib/httpcore-4.3.2"/>
+	<classpath location="../lib/httpmime-4.3.3"/>
+        </javac>
     </target>
 
     <target name="jar" depends="compile">

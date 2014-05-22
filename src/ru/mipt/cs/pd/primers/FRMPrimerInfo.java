@@ -32,12 +32,15 @@ public class FRMPrimerInfo extends JFrame{
 	private DefaultListModel listModel;
 	private ArrayList<Primer> parentList;
 	private IntPNLPreviousPrimers parentFrame;
+	private Object tag;
 	
 	public FRMPrimerInfo(Primer currPrimer, DefaultListModel par, ArrayList<Primer> somePrimers, IntPNLPreviousPrimers parr){
 		
 		parentFrame=parr;
-
-		//Environment.prinAllDNAs();
+		
+		//highlight the Primer
+		System.out.println(currPrimer.getEnd());
+		tag = parentFrame.highlightPrimer(currPrimer.getBeg(), currPrimer.getEnd());		
 		
 		listModel=par;
 		parentList=somePrimers;
@@ -65,6 +68,7 @@ public class FRMPrimerInfo extends JFrame{
 		
 		btnBack.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				parentFrame.dehighlightPrimer(tag);
 				dispose();
 			}
 		});
@@ -79,6 +83,7 @@ public class FRMPrimerInfo extends JFrame{
 					String str=primer.toString(true);
 					listModel.addElement(str);
 				}
+				parentFrame.dehighlightPrimer(tag);
 				dispose();
 			}
 		});
@@ -103,7 +108,7 @@ public class FRMPrimerInfo extends JFrame{
 					catch (NullPointerException e) {};
 					
 					}
-					//Environment.prinAllDNAs();
+				parentFrame.dehighlightPrimer(tag);
 				primer.die();
 				dispose();
 			}

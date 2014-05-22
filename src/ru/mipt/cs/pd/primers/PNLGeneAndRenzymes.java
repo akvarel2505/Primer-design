@@ -1,6 +1,7 @@
 package ru.mipt.cs.pd.primers;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -43,6 +45,7 @@ public class PNLGeneAndRenzymes extends JPanel{
 	private int geneBegin, geneEnd;
 	private Object geneTag;
 	private EnzymesWithInfo leftEnz, rightEnz;
+	private FRMWait message;
 
 	private IntFRMSimplePrimers parentFrame;
 	
@@ -73,12 +76,16 @@ public class PNLGeneAndRenzymes extends JPanel{
 				
 				JTextField txtEditPrimer = parentFrame.getTxtEditPrimer();
 				JLabel infoAboutEdited = parentFrame.getInfoAboutEdited();
-				try {
+				int beg = txtShowGene.getSelectionStart();
+				int end = txtShowGene.getSelectionEnd();
+				if ((end-beg)<75) try {
 					txtEditPrimer.setText(txtShowGene.getSelectedText());
-					HandMadePrimer currentlyEdited = new HandMadePrimer(txtEditPrimer.getText());
+					HandMadePrimer currentlyEdited = new HandMadePrimer(beg, end, txtEditPrimer.getText());
 					String str=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getLength(), currentlyEdited.getPercentageGC());
 					infoAboutEdited.setText(str);
 					parentFrame.getPNLEditedExtract().setPrimer(currentlyEdited);
+					parentFrame.getPNLEditedExtract().setBegin(beg);
+					parentFrame.getPNLEditedExtract().setEnd(end);
 				}
 				catch (java.lang.NullPointerException e){}
 				catch (java.lang.StringIndexOutOfBoundsException e){}
@@ -324,10 +331,22 @@ public class PNLGeneAndRenzymes extends JPanel{
 		
 		btnFindAutoPrimers.addActionListener(new java.awt.event.ActionListener(){
 			public void actionPerformed(ActionEvent evt) {
-				parentFrame.clearAutoPrimers();
-				AutoPrimersAlg primerChooser = new AutoPrimersAlg(geneBegin, geneEnd, selectedLeft, selectedRight);
-				AutoPrimers res = primerChooser.getResult();
-				parentFrame.showPrimers(res);
+
+				Point p = new Point(btnFindAutoPrimers.getX(), btnFindAutoPrimers.getY()/2);
+				message = new FRMWait(p);
+				
+				SwingUtilities.invokeLater(new Runnable() { 
+					 public void run() { 
+						//begin algorithm
+							parentFrame.clearAutoPrimers();
+							AutoPrimersAlg primerChooser = new AutoPrimersAlg(geneBegin, geneEnd, selectedLeft, selectedRight);
+							AutoPrimers res = primerChooser.getResult();
+							parentFrame.showPrimers(res);
+							//end algorithm
+							
+							message.dispose();
+					 } 
+					 }); 
 			}
 		});
 		//
@@ -378,11 +397,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 				leftRenz.addMouseListener(new java.awt.event.MouseListener(){
 						@Override
 						public void mouseClicked(MouseEvent arg0) {
-							
+							try{
 							int indLeft=leftRenz.getSelectedIndex();
 							RenzymeWithANumber buf=leftEnz.array[indLeft];
-							
-							//System.out.println(buf.renzyme.getPlace());
 							
 							if (selectedLeft.contains(buf)) {
 								selectedLeft.remove(buf);
@@ -392,7 +409,11 @@ public class PNLGeneAndRenzymes extends JPanel{
 								selectedLeft.add(buf);
 								highlight(leftEnz,indLeft);
 							}
+						}
+						catch (ArrayIndexOutOfBoundsException eee){
 							
+						}
+
 						}
 						public void mouseEntered(MouseEvent arg0) {}
 						public void mouseExited(MouseEvent arg0) {}
@@ -405,6 +426,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 							public void mouseClicked(MouseEvent arg0) {
 								
 								int indRight=rightRenz.getSelectedIndex();
+								
+								try{
+								
 								RenzymeWithANumber buf=rightEnz.array[indRight];
 								
 								//System.out.println(buf.toString());
@@ -416,6 +440,10 @@ public class PNLGeneAndRenzymes extends JPanel{
 								else {
 									selectedRight.add(buf);
 									highlight(rightEnz,indRight);
+								}
+								}
+								catch (ArrayIndexOutOfBoundsException eee){
+									
 								}
 								
 							}
@@ -516,5 +544,9 @@ public class PNLGeneAndRenzymes extends JPanel{
 				layout.linkSize(selectAllR, deselectAllR, selectAllL, deselectAllL);
 				layout.linkSize(btnFindAutoPrimers, btnBack);
 
+	}
+	
+	public JTextArea getTxtShowGene(){
+		return txtShowGene;
 	}
 }

@@ -1,0 +1,14 @@
+Trp, W
+
+Molecular formula	C11H12N2O2
+
+Molar mass	204.23 g mol-1
+
+Solubility in water	Soluble: 11.4 g/L at 25 C,
+
+Solubility	Soluble in hot alcohol, 
+		alkali hydroxides; 
+		insoluble in chloroform.
+
+Acidity (pKa)	2.38 (carboxyl), 
+		9.39 (amino)

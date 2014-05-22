@@ -11,6 +11,8 @@ public class LabelsEN {
 	final static String btnBack="Back to the Main Molecule";
 	final static String brdRightEnz="Right enzymes";
 	final static String brdLeftEnz="Left enzymes";
+	static final String lblWait = "Wait...";
+	
 	
 	//pnlEditedExtract
 	final static String editTitledBrd="Information about edited fragment";

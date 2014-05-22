@@ -4,4 +4,8 @@ package ru.mipt.cs.pd.restrictases;
  */
 public abstract class RenzymeParentWithRenzymeMass{
     public static RenzymeMass renzymeArrayList = new RenzymeMass();
+    
+    public static void update(){
+    	renzymeArrayList = new RenzymeMass();
+    }
 }

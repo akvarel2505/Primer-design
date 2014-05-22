@@ -6,6 +6,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -38,7 +39,7 @@ public class FRMSimplePrimers extends JFrame implements IntFRMSimplePrimers{
 		brdEdit = new TitledBorder(LabelsEN.editTitledBrd);
 		editedExtract.setBorder(brdEdit);
 		
-		previousPrimers=new PNLPreviousPrimers();
+		previousPrimers=new PNLPreviousPrimers(this);
 		brgLblPrimer = new TitledBorder(LabelsEN.infoPrevPrimer);
 		previousPrimers.setBorder(brgLblPrimer);
 		
@@ -130,6 +131,16 @@ public class FRMSimplePrimers extends JFrame implements IntFRMSimplePrimers{
 	@Override
 	public void clearAll() {
 		previousPrimers.clearAll();		
+	}
+
+	@Override
+	public JTextArea getTxtShowGene() {
+		return geneAndRenzymes.getTxtShowGene();
+	}
+
+	@Override
+	public PNLPreviousPrimers getPNLPrevPrmers() {
+		return previousPrimers;
 	}
 	
 }

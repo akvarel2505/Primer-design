@@ -1,7 +1,6 @@
 package ru.mipt.cs.pd.utils;
 
 import ru.mipt.cs.pd.dna.Environment;
-import ru.mipt.cs.pd.restrictases.Error;
 
 public class DNAStringUtils {
 	

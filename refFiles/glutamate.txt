@@ -1,0 +1,16 @@
+Glu, E
+
+Molecular formula	C5H9NO4
+
+Molar mass	147.13 g mol-1
+
+Appearance	white crystalline powder
+
+Density	1.4601 (20 C)
+
+Melting point	199 C decomp.
+
+Solubility in water	8.64 g/l (25 C) 
+
+Solubility	0.00035g/100g ethanol 
+		(25 C)

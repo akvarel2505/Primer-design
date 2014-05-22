@@ -10,7 +10,7 @@ public class Environment {
 	
 	// THE MAIN DNA
 	
-	public static String theMainDNA="";
+	public static String theMainDNA="actg";
 	
 	public static void setMainDNA(String str){
 		theMainDNA=str;

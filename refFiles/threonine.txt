@@ -1,0 +1,10 @@
+Thr, T
+
+Molecular formula	C4H9NO3
+
+Molar mass	119.12 g mol-1
+
+Solubility in water	10.6 g/dl (30 C)
+
+Acidity (pKa)	2.63 (carboxyl), 
+		10.43 (amino)

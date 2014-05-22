@@ -12,7 +12,6 @@ import ru.mipt.cs.pd.dna.SimpleExtract;
     //на вход нужны прописные буквы
 public class Renzyme {
     private String place;
-
     private String name;
     private int numOfPos;
     private ArrayList<SimpleExtract> posPlaces = new ArrayList<SimpleExtract>();
@@ -37,7 +36,6 @@ public class Renzyme {
 
         }
     }
-
     //getters area
     public int getNumOfPos(){
         return numOfPos;
@@ -61,10 +59,9 @@ public class Renzyme {
         }
         return 0;
     }
-
     
     public String toString(){
-        String s = name + " (" + numOfPos + ") " + place;
+        String s = name + " (" + numOfPos + ") ";
         return s;
 
     }

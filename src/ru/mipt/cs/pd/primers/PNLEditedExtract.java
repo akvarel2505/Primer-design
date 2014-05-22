@@ -24,7 +24,16 @@ public class PNLEditedExtract extends JPanel implements IntPNLEditedExtract{
 	private Primer primer;
 	private HandMadePrimer currentlyEdited;
 	private IntFRMSimplePrimers parent;
+	private int begin, end;
 	
+	public void setBegin(int begin) {
+		this.begin = begin;
+	}
+
+	public void setEnd(int end) {
+		this.end = end;
+	}
+
 	public Primer getPrimer() {
 		return primer;
 	}
@@ -43,14 +52,14 @@ public class PNLEditedExtract extends JPanel implements IntPNLEditedExtract{
 		btnAnalyseFalseSites.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {				
-				try{
+				//try{
 					if (Environment.DNAs.contains(primer)){}
 					else{
 						Environment.DNAs.add(primer);
 					}
-					FRMPrimerInfo x = new FRMPrimerInfo(primer, parent.getDefaultListModel(), Environment.leftPrimers, null);
-				}
-				catch (NullPointerException e){}
+					FRMPrimerInfo x = new FRMPrimerInfo(primer, parent.getDefaultListModel(), Environment.leftPrimers, parent.getPNLPrevPrmers());
+				//}
+				//catch (NullPointerException e){System.out.println("Oops!");}
 			}
 		});
 		
@@ -93,12 +102,12 @@ public class PNLEditedExtract extends JPanel implements IntPNLEditedExtract{
 
 	@Override
 	public void setInfoAboutEdited() {
-		    try{
+		   try{
 				primer.die();
 			}
-		    catch (java.lang.NullPointerException e){}
+		   catch (java.lang.NullPointerException e){}
 		   String str1 = txtEditPrimer.getText().trim();
-		   currentlyEdited = new HandMadePrimer(str1); 
+		   currentlyEdited = new HandMadePrimer(begin, end, str1); 
 		   String str2=String.format(LabelsEN.formatInfoAboutEdited, currentlyEdited.getTm(), currentlyEdited.getLength(), currentlyEdited.getPercentageGC());
 		   infoAboutEdited.setText(str2);
 		   primer = currentlyEdited;
